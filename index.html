@@ -18,16 +18,26 @@
             margin: 5px;
             height: 200px;
         }
+        .card {
+            text-align: center;
+            background-color: transparent !important; /*important overrides bootstraps default*/
+            border: none !important;
+            color: white !important;
+        }
     </style>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackJack</title>
+    <title>BlackJack</title> 
 </head>
 <body>
     <div class="button-container">
         <button class="btn btn-primary"> STAND </button>
-        <button class="btn btn-primary"> HIT  </button>
+        <button class="btn btn-primary"> HIT </button>
+    </div>
+    <div class="card">
+        <h3>Dealers Hand</h3>
+        <h1></h1>
     </div>
 </body>
 </html>
