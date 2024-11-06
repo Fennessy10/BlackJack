@@ -24,6 +24,20 @@
             border: none !important;
             color: white !important;
         }
+        .dealersHand{
+            margin: 10px;
+        }
+        .playersHand{
+            position: fixed;
+            margin: 15px;
+            bottom: 50%;
+            text-align: center;
+            transform: translateX(-50%); /* Adjusts for container width */
+            left: 50%; /* Centers horizontally */
+        }
+        .super-large{
+            font-size: 8rem;
+        }
     </style>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <meta charset="UTF-8">
@@ -36,8 +50,9 @@
         <button class="btn btn-primary"> HIT </button>
     </div>
     <div class="card">
-        <h3>Dealers Hand</h3>
-        <h1></h1>
+        <h3 class="dealersHand">Dealers Hand</h3>
+        <h1 class="super-large" id="dealer">7</h1>
+        <h3 class="playersHand">Players Hand</h3>
     </div>
 </body>
 </html>
