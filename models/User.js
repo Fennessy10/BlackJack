@@ -1,3 +1,4 @@
+const { triggerAsyncId } = require("async_hooks");
 const mongoose = require("mongoose");
 
 // const aceQns = "1 or 11?"
@@ -26,19 +27,38 @@ const userSchema = new mongoose.Schema({
     user_name:{
         type: String,
         Required: true,
-        Unique: true
-    },
-    win_percentage: {
-        type: Number,
+        Unique: true,
+        lowercase: true,
+        minlength: 3,
+        maxlength: 10
     },
     wins: {
         type: Number,
+        Required: true,
+        min: 0
     },
     losses: {
         type: Number,
+        Required: true,
+        min: 0
+    },
+    createdAt: {
+        type: Date,
+        immutable: true, //ensures this acts as created at rather than updated at
+        default: () => Date.now()
+    },
+    updatedAt: {
+        type: Date,
+        default: () => Date.now()
+    },
+    friend: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User"
     }
 
 })
+
+// userSchema.virtual("calculateWinPercentage")
 
 const User = mongoose.model('Users', userSchema)
 

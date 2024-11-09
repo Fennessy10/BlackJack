@@ -7,14 +7,21 @@ mongoose.connect("mongodb://localhost/User")
 
 
 async function run() {
-    const user = new User({
-        user_name: "pfen",
-        win_percentage: 0,
-        wins: 0,
-        lossed: 0
+    try{
+        const user = new User({ // creates the user
+            user_name: "pfen",
+            win_percentage: 0,
+            wins: 0,
+            losses: 0
+        })
+        // await user.save(); // saves the user to the database
+        // await User.deleteMany({ user_name: "pfen"});
+        console.log(user);
+    } catch (e) {
+        console.error(e.message);
+    }
 
-    })
-    await user.save();
-    console.log(user);
 }
+
+run()
 
