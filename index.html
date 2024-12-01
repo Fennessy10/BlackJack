@@ -42,6 +42,14 @@
         .super-large{
             font-size: 8rem;
         }
+        .win-percentage{
+            margin: 10px;
+            color: lightpink;
+            position: fixed;
+            top: 80%; /* Adjust this value to move the "9" lower */
+            transform: translateX(-50%); /* Adjusts for container width */
+            left: 8%; /* Centers horizontally */
+        }
         #player {
             position: fixed;
             top: 55%; /* Adjust this value to move the "9" lower */
@@ -65,6 +73,7 @@
         <h3 class="playersHand">Players Hand</h3>
         <h1 class="super-large" id="dealer">7</h1>
         <h1 class="super-large" id="player">9</h1>
+        <h3 class="win-percentage"> win percentage: </h3>
     </div>
 </body>
 </html>

@@ -23,5 +23,4 @@ async function run() {
 
 }
 
-run()
 
