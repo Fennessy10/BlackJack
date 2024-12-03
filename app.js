@@ -8,10 +8,7 @@ const PORT_NUMBER = 8080;
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect("mongodb://localhost/User", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect("mongodb://localhost/User")
 .then(() => console.log("Connected to MongoDB"))
 .catch((err) => console.error("Error connecting to MongoDB:", err));
 
