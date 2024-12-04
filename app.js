@@ -14,15 +14,17 @@ mongoose.connect("mongodb://localhost/User")
 
 // Middleware
 app.use(express.static("node_modules/bootstrap/dist/css"));
-app.use(express.static("images"));
+app.use(express.static("images")); // images is now the route folder
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/bootstrap", express.static("node_modules/bootstrap/dist")); //make bootstrap accessible so that express can serve it
+
 
 // Dummy route for testing
 app.get("/", (req, res) => {
-    res.send("Server is running!");
+    res.render("index");
 });
 
 // Start the server
@@ -44,3 +46,21 @@ async function run() {
         console.error(e.message);
     }
 }
+
+// Add this route in app.js
+app.get("/api/user/:username", async (req, res) => {
+    try {
+        const username = req.params.username.toLowerCase();
+        const user = await User.findOne({ user_name: username }); // find the username in the database
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const winPercentage = user.calculatedWinPercentage; // Use the virtual property
+        res.json({ winPercentage });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "An error occurred" });
+    }
+});
