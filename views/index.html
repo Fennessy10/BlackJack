@@ -1,70 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-        body {
-            /* ../ means you go up one directory */
-            background-image: url('/poker-table-background.avif');
-
-        }
-        .button-container {
-            position: fixed;
-            bottom: 20px;
-            text-align: center;
-            left: 50%; /* Centers horizontally */
-            transform: translateX(-50%); /* Adjusts for container width */
-            display: flex; /* allows the buttons to narrow together by changing in size when close*/
-            gap: 20px;
-
-        }
-        .button-container button {
-            width: 200px;
-            height: 200px;
-            font-size: 3rem;
-        }
-        .card {
-            text-align: center;
-            background-color: transparent !important; /*important overrides bootstraps default*/
-            border: none !important;
-            color: white !important;
-        }
-        .dealersHand{
-            margin: 10px;
-            color: lightyellow;
-        }
-        .playersHand{
-            position: fixed;
-            margin: 0px;
-            bottom: 25%;
-            text-align: center;
-            transform: translateX(-50%); /* Adjusts for container width */
-            left: 50%; /* Centers horizontally */
-            color: lightblue;
-        }
-        .super-large{
-            font-size: 8rem;
-        }
-        .win-percentage{
-            margin: 10px;
-            color: lightpink;
-            position: fixed;
-            top: 80%; /* Adjust this value to move the "9" lower */
-            transform: translateX(-50%); /* Adjusts for container width */
-            left: 8%; /* Centers horizontally */
-        }
-        #player {
-            position: fixed;
-            top: 55%; /* Adjust this value to move the "9" lower */
-            transform: translateX(-50%); /* Adjusts for container width */
-            left: 50%; /* Centers horizontally */
-        }
-    </style>
-    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
-    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackJack</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/index.css">
+
+    <!-- Bootstrap JS -->
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript -->
     <script src="index.js"></script>
-    <title>BlackJack</title> 
 </head>
 <body>
     <div class="button-container">

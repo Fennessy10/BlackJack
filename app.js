@@ -15,6 +15,9 @@ mongoose.connect("mongodb://localhost/User")
 // Middleware
 app.use(express.static("node_modules/bootstrap/dist/css"));
 app.use(express.static("images")); // images is now the route folder
+// Serve static files from the public folder too
+app.use(express.static("public"));
+
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
 app.use(express.urlencoded({ extended: true }));
