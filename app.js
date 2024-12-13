@@ -50,7 +50,7 @@ async function run() {
     }
 }
 
-// Add this route in app.js
+// the api is called by the front-end, namely User.js thus this acts to serve teh front-end
 app.get("/api/user/:username", async (req, res) => {
     try {
         const username = req.params.username.toLowerCase();
