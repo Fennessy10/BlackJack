@@ -1,6 +1,8 @@
 const express = require("express"); //enable express which allows routing
 const mongoose = require("mongoose"); //enable mongodb
 const User = require("./models/User");
+const { router: gameplayRoutes } = require("./gameplay");
+
 
 const PORT_NUMBER = 8080;
 
@@ -36,21 +38,21 @@ app.listen(PORT_NUMBER, () => {
 });
 
 // Test database logic (optional)
-async function run() {
-    try {
-        const user = new User({ // creates the user
-            user_name: "pfen",
-            win_percentage: 0,
-            wins: 0,
-            losses: 0,
-        });
-        console.log(user);
-    } catch (e) {
-        console.error(e.message);
-    }
-}
+// async function run() {
+//     try {
+//         const user = new User({ // creates the user
+//             user_name: "pfen",
+//             win_percentage: 0,
+//             wins: 0,
+//             losses: 0,
+//         });
+//         console.log(user);
+//     } catch (e) {
+//         console.error(e.message);
+//     }
+// }
 
-// the api is called by the front-end, namely User.js thus this acts to serve teh front-end
+// the api is called by the front-end, namely User.js thus this acts to serve thw front-end
 app.get("/api/user/:username", async (req, res) => {
     try {
         const username = req.params.username.toLowerCase();
@@ -67,3 +69,6 @@ app.get("/api/user/:username", async (req, res) => {
         res.status(500).json({ error: "An error occurred" });
     }
 });
+
+// Mount gameplay-related routes
+app.use("/api", gameplayRoutes); // All gameplay routes are prefixed with /api
