@@ -2,34 +2,73 @@ const express = require("express")
 const router = express.Router(); // Use router to create modular routes
 
 const aceQns = "1 or 11?";
-let currentHand = 0;
+let currentPlayerHand = 0;
+let currentDealerHand = 0;
 
 function getRandom(max) {
     return Math.floor(Math.random() * max);
 }
 
 // Helper function to get a random card
-function getCard() {
-    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, "ace"];
+function getPlayerCard() {
+    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]; //chance of an ace removed (for simplicity) but will be added back later
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
-    totalHandValue = currentHand + addedCard;
-    currentHand = totalHandValue;
-    return totalHandValue;
+    totalHandValue = currentPlayerHand + addedCard;
+    currentPlayerHand = totalHandValue;
+    if (totalHandValue <= 21) {
+        return totalHandValue;
+    } else {
+        currentPlayerHand = 0;
+        return "BUST"
+    }
+}
+
+function getDealerCard() {
+    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]; //chance of an ace removed (for simplicity) but will be added back later
+    const index = Math.floor(Math.random() * possibleHand.length);
+    let addedCard = possibleHand[index];
+    totalHandValue = currentDealerHand + addedCard;
+    currentDealerHand = totalHandValue;
+    if (totalHandValue <= 21) {
+        return totalHandValue;
+    } else {
+        currentDealerHand = 0;
+        return "BUST"
+    }
 }
 
 
 
-// API endpoint to serve a random card
-router.get("/card", (req, res) => {
+// API endpoint to serve a random card to index.js
+router.get("/playerCard", (req, res) => {
     try {
-        const card = getCard(); // Call the getCard function
+        const card = getPlayerCard(); // Call the getCard function
         res.json({ card }); // Send the card as a JSON response
     } catch (err) {
         console.error(err); // Log any errors
-        res.status(500).json({ error: "An error occurred while getting a card." });
+        res.status(500).json({ error: "An error occurred while getting a player card." });
     }
 });
+
+// API endpoint to serve a random card to index.js
+router.get("/dealerCard", (req, res) => {
+    try {
+        const card = getDealerCard(); // Call the getCard function
+        res.json({ card }); // Send the card as a JSON response
+    } catch (err) {
+        console.error(err); // Log any errors
+        res.status(500).json({ error: "An error occurred while getting a Dealer card." });
+    }
+});
+
+router.get("/currentHands", (req, res) => {
+    res.json({
+        playerCurrentHand: currentPlayerHand,
+        dealerCurrentHand: currentDealerHand,
+    });
+});
+
 
 module.exports = router; // Export the router for use in app.js
 
@@ -62,4 +101,4 @@ function checkWinner(playerScore, dealerScore) {
     return playerScore > dealerScore ? "Player Wins!" : "Dealer Wins!";
 }
 
-module.exports = { router, getCard, checkWinner };
+module.exports = { router, getDealerCard: getPlayerCard, checkWinner };

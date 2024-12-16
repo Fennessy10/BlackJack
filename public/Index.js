@@ -1,6 +1,21 @@
 // Select the player score element and the HIT button
 const playerScoreElement = document.getElementById("player");
+const dealerScoreElement = document.getElementById("dealer");
 const hitButton = document.getElementById("hit");
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch("/currentHands"); // Fetch current hand values from the server
+        const data = await response.json(); // Parse JSON response
+
+        // Update the values in the HTML
+        playerScoreElement.textContent = data.playerCurrentHand;
+        dealerScoreElement.textContent = data.dealerCurrentHand;
+    } catch (error) {
+        console.error("Error fetching current hands:", error);
+    }
+});
+
 
 async function fetchWinPercentage(username) {
     try {
@@ -24,17 +39,32 @@ async function fetchWinPercentage(username) {
 hitButton.addEventListener("click", async () => {
     try {
         // Fetch the updated card value from the API
-        const response = await fetch("/api/card");
-        if (!response.ok) throw new Error("Failed to fetch card data");
+        const playerCardResponse = await fetch("/api/playerCard");
+        if (!playerCardResponse.ok) throw new Error("Failed to fetch card data");
 
-        const data = await response.json();
+        const playerCardData = await playerCardResponse.json();
 
         // Update the player's score in the DOM
-        playerScoreElement.textContent = data.card; // Assuming "data.card" contains the updated score
+        playerScoreElement.textContent = playerCardData.card;
+
+
+
+        const dealerCardResponse = await fetch("/api/dealerCard");
+        if (!dealerCardResponse.ok) throw new Error("Failed to fetch card data");
+
+        const dealerCardData = await dealerCardResponse.json();
+
+        // Update the dealer's score in the DOM
+        dealerScoreElement.textContent = dealerCardData.card; 
+
+
     } catch (err) {
-        console.error("Error updating player score:", err);
+        console.error("Error updating scores:", err);
     }
 });
+
+
+
 
 
 // Call the function with the username

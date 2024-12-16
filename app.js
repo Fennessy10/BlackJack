@@ -52,7 +52,7 @@ app.listen(PORT_NUMBER, () => {
 //     }
 // }
 
-// the api is called by the front-end, namely User.js thus this acts to serve thw front-end
+// the api is called by the front-end, namely User.js thus this acts to serve the front-end
 app.get("/api/user/:username", async (req, res) => {
     try {
         const username = req.params.username.toLowerCase();
