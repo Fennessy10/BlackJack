@@ -3,9 +3,9 @@ const playerScoreElement = document.getElementById("player");
 const dealerScoreElement = document.getElementById("dealer");
 const hitButton = document.getElementById("hit");
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async (username) => {
     try {
-        const response = await fetch("/currentHands"); // Fetch current hand values from the server
+        const response = await fetch("/api/${username}/currentHands"); // Fetch current hand values from the server
         const data = await response.json(); // Parse JSON response
 
         // Update the values in the HTML
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function fetchWinPercentage(username) {
     try {
-        const response = await fetch(`/api/user/${username}`);
+        const response = await fetch(`/api/${username}`);
         if (!response.ok) {
             throw new Error(`Error fetching win percentage: ${response.status}`);
         }

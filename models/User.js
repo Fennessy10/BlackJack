@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
         Required: true,
         min: 0
     },
+    currentPlayerHand: {
+        type: Number,
+        min: 0
+    },
+    currentDealerHand: {
+        type: Number,
+        min: 0
+    },
     createdAt: {
         type: Date,
         immutable: true, //ensures this acts as created at rather than updated at

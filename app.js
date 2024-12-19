@@ -53,7 +53,7 @@ app.listen(PORT_NUMBER, () => {
 // }
 
 // the api is called by the front-end, namely User.js thus this acts to serve the front-end
-app.get("/api/user/:username", async (req, res) => {
+app.get("/api/:username", async (req, res) => {
     try {
         const username = req.params.username.toLowerCase();
         const user = await User.findOne({ user_name: username }); // find the username in the database
@@ -70,5 +70,9 @@ app.get("/api/user/:username", async (req, res) => {
     }
 });
 
+// app.get("api/:username/"), async (res, req) => {
+//     try
+// }
+
 // Mount gameplay-related routes
-app.use("/api", gameplayRoutes); // All gameplay routes are prefixed with /api
+app.use("/api/:username", gameplayRoutes); // All gameplay routes now include the username

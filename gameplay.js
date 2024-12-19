@@ -1,7 +1,6 @@
-const express = require("express")
+const express = require("express");
 const router = express.Router(); // Use router to create modular routes
 
-const aceQns = "1 or 11?";
 let currentPlayerHand = 0;
 let currentDealerHand = 0;
 
@@ -9,59 +8,59 @@ function getRandom(max) {
     return Math.floor(Math.random() * max);
 }
 
-// Helper function to get a random card
-function getPlayerCard() {
-    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]; //chance of an ace removed (for simplicity) but will be added back later
+// Helper function to get a random card for the player
+function addPlayerCard() {
+    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
-    totalHandValue = currentPlayerHand + addedCard;
-    currentPlayerHand = totalHandValue;
-    if (totalHandValue <= 21) {
-        return totalHandValue;
+    currentPlayerHand += addedCard;
+
+    if (currentPlayerHand <= 21) {
+        return currentPlayerHand;
     } else {
         currentPlayerHand = 0;
-        return "BUST"
+        return "BUST";
     }
 }
 
-function getDealerCard() {
-    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]; //chance of an ace removed (for simplicity) but will be added back later
+// Helper function to get a random card for the dealer
+function addDealerCard() {
+    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
-    totalHandValue = currentDealerHand + addedCard;
-    currentDealerHand = totalHandValue;
-    if (totalHandValue <= 21) {
-        return totalHandValue;
+    currentDealerHand += addedCard;
+
+    if (currentDealerHand <= 21) {
+        return currentDealerHand;
     } else {
         currentDealerHand = 0;
-        return "BUST"
+        return "BUST";
     }
 }
 
-
-
-// API endpoint to serve a random card to index.js
+// Route to serve a random card for the player
 router.get("/playerCard", (req, res) => {
     try {
-        const card = getPlayerCard(); // Call the getCard function
-        res.json({ card }); // Send the card as a JSON response
+        const card = addPlayerCard();
+        res.json({ card });
     } catch (err) {
-        console.error(err); // Log any errors
+        console.error(err);
         res.status(500).json({ error: "An error occurred while getting a player card." });
     }
 });
 
-// API endpoint to serve a random card to index.js
+// Route to serve a random card for the dealer
 router.get("/dealerCard", (req, res) => {
     try {
-        const card = getDealerCard(); // Call the getCard function
-        res.json({ card }); // Send the card as a JSON response
+        const card = addDealerCard();
+        res.json({ card });
     } catch (err) {
-        console.error(err); // Log any errors
-        res.status(500).json({ error: "An error occurred while getting a Dealer card." });
+        console.error(err);
+        res.status(500).json({ error: "An error occurred while getting a dealer card." });
     }
 });
 
+// Route to get the current hands for both player and dealer
 router.get("/currentHands", (req, res) => {
     res.json({
         playerCurrentHand: currentPlayerHand,
@@ -69,36 +68,4 @@ router.get("/currentHands", (req, res) => {
     });
 });
 
-
-module.exports = router; // Export the router for use in app.js
-
-
-// function calculateScore(hand) {
-//     let score = 0;
-//     let hasAce = false;
-
-//     hand.forEach(card => {
-//         if (card === "ace") {
-//             hasAce = true;
-//             score += 11; // Assume ace is 11 initially
-//         } else {
-//             score += card;
-//         }
-//     });
-
-//     // Adjust score if there is an ace and the score exceeds 21
-//     if (hasAce && score > 21) {
-//         score -= 10; // Make ace count as 1 instead of 11
-//     }
-
-//     return score;
-// }
-
-function checkWinner(playerScore, dealerScore) {
-    if (playerScore > 21) return "Dealer Wins!";
-    if (dealerScore > 21) return "Player Wins!";
-    if (playerScore === dealerScore) return "Tie!";
-    return playerScore > dealerScore ? "Player Wins!" : "Dealer Wins!";
-}
-
-module.exports = { router, getDealerCard: getPlayerCard, checkWinner };
+module.exports = { router };
