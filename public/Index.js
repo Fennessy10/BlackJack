@@ -2,11 +2,15 @@
 const playerScoreElement = document.getElementById("player");
 const dealerScoreElement = document.getElementById("dealer");
 const hitButton = document.getElementById("hit");
+const username = "pfen"; // Replace with a dynamic value if needed
 
-document.addEventListener("DOMContentLoaded", async (username) => {
+// Fetch current hand values on page load
+document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch("/api/${username}/currentHands"); // Fetch current hand values from the server
-        const data = await response.json(); // Parse JSON response
+        const response = await fetch(`/api/${username}/currentHands`); // Corrected string interpolation
+        if (!response.ok) throw new Error("Failed to fetch current hands");
+
+        const data = await response.json();
 
         // Update the values in the HTML
         playerScoreElement.textContent = data.playerCurrentHand;
@@ -14,60 +18,49 @@ document.addEventListener("DOMContentLoaded", async (username) => {
     } catch (error) {
         console.error("Error fetching current hands:", error);
     }
+
+    // Fetch and display win percentage
+    fetchWinPercentage(username);
 });
 
-
+// Fetch and display win percentage
 async function fetchWinPercentage(username) {
     try {
         const response = await fetch(`/api/${username}`);
-        if (!response.ok) {
-            throw new Error(`Error fetching win percentage: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error fetching win percentage: ${response.status}`);
 
         const data = await response.json();
         const winPercentage = data.winPercentage.toFixed(2); // Format to 2 decimal places
 
         // Update the HTML with the win percentage
-        document.getElementById('win-percentage').innerText = `${winPercentage}%`;
+        document.getElementById("win-percentage").innerText = `${winPercentage}%`;
     } catch (error) {
-        console.error(error);
-        document.getElementById('win-percentage').innerText = 'N/A';
+        console.error("Error fetching win percentage:", error);
+        document.getElementById("win-percentage").innerText = "N/A";
     }
 }
 
 // Add an event listener for the HIT button
-hitButton.addEventListener("click", async () => {
-    try {
-        // Fetch the updated card value from the API
-        const playerCardResponse = await fetch("/api/playerCard");
-        if (!playerCardResponse.ok) throw new Error("Failed to fetch card data");
+if (hitButton) {
+    hitButton.addEventListener("click", async () => {
+        try {
+            // Fetch the updated player card
+            const playerCardResponse = await fetch("/api/playerCard");
+            if (!playerCardResponse.ok) throw new Error("Failed to fetch player card");
 
-        const playerCardData = await playerCardResponse.json();
+            const playerCardData = await playerCardResponse.json();
+            playerScoreElement.textContent = playerCardData.card;
 
-        // Update the player's score in the DOM
-        playerScoreElement.textContent = playerCardData.card;
+            // Fetch the updated dealer card
+            const dealerCardResponse = await fetch("/api/dealerCard");
+            if (!dealerCardResponse.ok) throw new Error("Failed to fetch dealer card");
 
-
-
-        const dealerCardResponse = await fetch("/api/dealerCard");
-        if (!dealerCardResponse.ok) throw new Error("Failed to fetch card data");
-
-        const dealerCardData = await dealerCardResponse.json();
-
-        // Update the dealer's score in the DOM
-        dealerScoreElement.textContent = dealerCardData.card; 
-
-
-    } catch (err) {
-        console.error("Error updating scores:", err);
-    }
-});
-
-
-
-
-
-// Call the function with the username
-fetchWinPercentage("pfen");
-
-
+            const dealerCardData = await dealerCardResponse.json();
+            dealerScoreElement.textContent = dealerCardData.card;
+        } catch (err) {
+            console.error("Error updating scores:", err);
+        }
+    });
+} else {
+    console.error("HIT button not found in the DOM.");
+}

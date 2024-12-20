@@ -37,20 +37,27 @@ app.listen(PORT_NUMBER, () => {
     console.log(`Listening on port ${PORT_NUMBER}`);
 });
 
-// Test database logic (optional)
-// async function run() {
-//     try {
-//         const user = new User({ // creates the user
-//             user_name: "pfen",
-//             win_percentage: 0,
-//             wins: 0,
-//             losses: 0,
-//         });
-//         console.log(user);
-//     } catch (e) {
-//         console.error(e.message);
-//     }
-// }
+
+// temporary tool to add a new user
+async function run() {
+    try {
+        const user = new User({ // creates the user
+            user_name: "pfen",
+            win_percentage: 0,
+            wins: 0,
+            losses: 0,
+            currentDealerHand: 0,
+            currentPlayerHand: 0,
+        });
+        // console.log(user);
+        // Save the user to the database
+        // await user.save();
+    } catch (e) {
+        console.error(e.message);
+    }
+}
+
+
 
 // the api is called by the front-end, namely User.js thus this acts to serve the front-end
 app.get("/api/:username", async (req, res) => {
@@ -76,3 +83,4 @@ app.get("/api/:username", async (req, res) => {
 
 // Mount gameplay-related routes
 app.use("/api/:username", gameplayRoutes); // All gameplay routes now include the username
+run();
