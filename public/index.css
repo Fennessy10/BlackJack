@@ -60,3 +60,21 @@ body {
     transform: translateX(-50%); /* Adjusts for container width */
     left: 50%; /* Centers horizontally */
 }
+
+.outcome{
+    position: fixed;
+    top: 30%; /* Adjust this value to move the "9" lower */
+    transform: translateX(-50%); /* Adjusts for container width */
+    left: 50%; /* Centers horizontally */
+    font-size: 10rem;
+}
+
+.youwin{
+    color: yellowgreen;
+}
+
+.youlose{
+    color: red;
+}
+
+

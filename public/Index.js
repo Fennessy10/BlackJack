@@ -7,7 +7,7 @@ const username = "pfen"; // Replace with a dynamic value if needed
 // Fetch current hand values on page load
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch(`/api/${username}/currentHands`); // Corrected string interpolation
+        const response = await fetch("/api/" + username + "/currentHands"); // Corrected string interpolation
         if (!response.ok) throw new Error("Failed to fetch current hands");
 
         const data = await response.json();
@@ -45,14 +45,17 @@ if (hitButton) {
     hitButton.addEventListener("click", async () => {
         try {
             // Fetch the updated player card
-            const playerCardResponse = await fetch("/api/playerCard");
+            const playerCardResponse = await fetch("/api/" + username + "/playerCard");
+            if (playerCardResponse.ok) {
+                console.log("should work lul")
+            }
             if (!playerCardResponse.ok) throw new Error("Failed to fetch player card");
 
             const playerCardData = await playerCardResponse.json();
             playerScoreElement.textContent = playerCardData.card;
 
             // Fetch the updated dealer card
-            const dealerCardResponse = await fetch("/api/dealerCard");
+            const dealerCardResponse = await fetch("/api/" + username + "/dealerCard");
             if (!dealerCardResponse.ok) throw new Error("Failed to fetch dealer card");
 
             const dealerCardData = await dealerCardResponse.json();
