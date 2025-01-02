@@ -71,10 +71,12 @@ body {
 
 .youwin{
     color: yellowgreen;
+    display: none;
 }
 
 .youlose{
     color: red;
+    display: none;
 }
 
 

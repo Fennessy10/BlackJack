@@ -3,6 +3,7 @@ const playerScoreElement = document.getElementById("player");
 const dealerScoreElement = document.getElementById("dealer");
 const hitButton = document.getElementById("hit");
 const username = "pfen"; // Replace with a dynamic value if needed
+const youLoseElement = document.getElementById("youlose")
 
 // Fetch current hand values on page load
 document.addEventListener("DOMContentLoaded", async () => {
@@ -46,12 +47,14 @@ if (hitButton) {
         try {
             // Fetch the updated player card
             const playerCardResponse = await fetch("/api/" + username + "/playerCard");
-            if (playerCardResponse.ok) {
-                console.log("should work lul")
-            }
             if (!playerCardResponse.ok) throw new Error("Failed to fetch player card");
 
             const playerCardData = await playerCardResponse.json();
+            console.log("Player card data:", playerCardData); // Debugging line
+
+            if (playerCardData.card === "BUST") {
+                youLoseElement.style.display = "block"
+            }
             playerScoreElement.textContent = playerCardData.card;
 
             // Fetch the updated dealer card
