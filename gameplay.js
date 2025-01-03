@@ -18,7 +18,6 @@ function addPlayerCard() {
     if (currentPlayerHand <= 21) {
         return currentPlayerHand;
     } else {
-        currentPlayerHand = 0;
         return "BUST";
     }
 }
@@ -33,7 +32,6 @@ function addDealerCard() {
     if (currentDealerHand <= 21) {
         return currentDealerHand;
     } else {
-        currentDealerHand = 0;
         return "BUST";
     }
 }
@@ -66,6 +64,18 @@ router.get("/currentHands", (req, res) => {
         playerCurrentHand: currentPlayerHand,
         dealerCurrentHand: currentDealerHand,
     });
+});
+
+// Route to reset hands for both player and dealer
+router.post("/resetHands", (req, res) => {
+    try {
+        currentPlayerHand = 0;
+        currentDealerHand = 0;
+        res.json({ message: "Hands have been reset." });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "An error occurred while resetting hands." });
+    }
 });
 
 module.exports = { router };

@@ -45,13 +45,33 @@ body {
     font-size: 8rem;
 }
 
-.win-percentage {
+.details {
     margin: 10px;
     color: lightpink;
     position: fixed;
-    top: 80%; /* Adjust this value to move the "9" lower */
-    transform: translateX(-50%); /* Adjusts for container width */
-    left: 8%; /* Centers horizontally */
+    transform: translateX(-50%);
+    left: 8%; /* Positions it near the left side */
+    top: 10%; /* Adjusted to provide vertical space */
+}
+
+.win-percentage {
+    position: relative; /* Positioned relative to `.details` */
+    margin-bottom: 20px; /* Adds spacing between win percentage and username */
+    text-align: center;
+}
+
+.win-percentage-label {
+    margin: 0;
+}
+
+.win-percentage-num {
+    color: orangered;
+}
+
+.username {
+    position: relative; /* Positioned relative to `.details` */
+    text-align: center; /* Ensures centered text */
+    margin-top: 20px; /* Adds spacing above username */
 }
 
 #player {
@@ -61,7 +81,7 @@ body {
     left: 50%; /* Centers horizontally */
 }
 
-.outcome{
+.outcome {
     position: fixed;
     top: 30%; /* Adjust this value to move the "9" lower */
     transform: translateX(-50%); /* Adjusts for container width */
@@ -69,14 +89,12 @@ body {
     font-size: 10rem;
 }
 
-.youwin{
+.youwin {
     color: yellowgreen;
     display: none;
 }
 
-.youlose{
+.youlose {
     color: red;
     display: none;
 }
-
-
