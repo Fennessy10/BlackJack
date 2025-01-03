@@ -4,6 +4,12 @@ const dealerScoreElement = document.getElementById("dealer");
 const hitButton = document.getElementById("hit");
 const username = "pfen"; // Replace with a dynamic value if needed
 const youLoseElement = document.getElementById("youlose")
+const youWinElement = document.getElementById("youwin")
+
+// delay utility function
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 // Fetch current hand values on page load
 document.addEventListener("DOMContentLoaded", async () => {
@@ -22,6 +28,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Fetch and display win percentage
     fetchWinPercentage(username);
+
+
+
 });
 
 // Fetch and display win percentage
@@ -54,7 +63,10 @@ if (hitButton) {
 
             if (playerCardData.card === "BUST") {
                 youLoseElement.style.display = "block"
+                await delay(1000)
+                location.reload();
             }
+            
             playerScoreElement.textContent = playerCardData.card;
 
             // Fetch the updated dealer card
@@ -62,6 +74,12 @@ if (hitButton) {
             if (!dealerCardResponse.ok) throw new Error("Failed to fetch dealer card");
 
             const dealerCardData = await dealerCardResponse.json();
+            if (dealerCardData.card === "BUST") {
+                youWinElement.style.display = "block"
+                await delay(1000);
+                location.reload();
+            }
+
             dealerScoreElement.textContent = dealerCardData.card;
         } catch (err) {
             console.error("Error updating scores:", err);
