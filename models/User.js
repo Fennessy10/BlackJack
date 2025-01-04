@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
     friend: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "User"
+    },
+    cheatSheetToggle: {
+        type: Boolean,
+        default: true
     }
 
 })

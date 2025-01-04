@@ -125,10 +125,16 @@ if (hitButton) {
 
 cheatSheetButton.addEventListener("click", async() => {
     try {
-        if (cheatSheetPic.style.display == "block") {
-            cheatSheetPic.style.display = "none"
+        await fetch("/api/" + username + "/toggleCheats", { method: "POST" }); // toggle cheats sheets in the mongoDB database
+
+        const response = await fetch("/api/" + username + "/toggleCheats", { method: "GET" }) // get the current toggle setting just changed
+        const data = await response.json();
+        const cheatsToggle = data.cheatSheetToggle;
+
+        if (cheatsToggle == true) { // if the cheats were toggled on as seen in the database
+            cheatSheetPic.style.display = "block" // display cheatSheet
         } else {
-            cheatSheetPic.style.display = "block"
+            cheatSheetPic.style.display = "none" // close display cheatSheet
         }
     } catch (err) {
         console.error("cheat sheet button error")

@@ -114,7 +114,7 @@ body {
     position: fixed; /* Position relative to the viewport */
     top: 17%;    /* Offset from the bottom */
     right: 11%;     /* Offset from the right */
-    width: 200px;    /* Button width */
+    width: 300px;    /* Button width */
     height: 50px;    /* Button height */
     font-size: 1.5rem; /* Button text size */
 }
