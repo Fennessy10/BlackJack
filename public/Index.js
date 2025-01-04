@@ -25,7 +25,18 @@ async function resetHands() {
     }
 }
 
-// Fetch current hand values on page load
+async function changeCheatSetting() {
+    const response = await fetch("/api/" + username + "/toggleCheats", { method: "GET" }) // get the current toggle setting just changed
+    const data = await response.json();
+    const cheatsToggle = data.cheatSheetToggle;
+    if (cheatsToggle == true) { // if the cheats were toggled on as seen in the database
+        cheatSheetPic.style.display = "block" // display cheatSheet
+    } else {
+        cheatSheetPic.style.display = "none" // close display cheatSheet
+    }
+}
+
+// on page load
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const response = await fetch("/api/" + username + "/currentHands"); // Corrected string interpolation
@@ -45,6 +56,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // display username
     document.getElementById("username").innerText = "username: " + username;
+
+    // Cheat sheet Consistency on page reload
+    changeCheatSetting();
+
 
 });
 
@@ -127,16 +142,10 @@ cheatSheetButton.addEventListener("click", async() => {
     try {
         await fetch("/api/" + username + "/toggleCheats", { method: "POST" }); // toggle cheats sheets in the mongoDB database
 
-        const response = await fetch("/api/" + username + "/toggleCheats", { method: "GET" }) // get the current toggle setting just changed
-        const data = await response.json();
-        const cheatsToggle = data.cheatSheetToggle;
-
-        if (cheatsToggle == true) { // if the cheats were toggled on as seen in the database
-            cheatSheetPic.style.display = "block" // display cheatSheet
-        } else {
-            cheatSheetPic.style.display = "none" // close display cheatSheet
-        }
+        changeCheatSetting();
     } catch (err) {
         console.error("cheat sheet button error")
     }
 });
+
+
