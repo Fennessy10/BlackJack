@@ -77,9 +77,6 @@ app.get("/api/:username", async (req, res) => {
     }
 });
 
-// app.get("api/:username/"), async (res, req) => {
-//     try
-// }
 
 // Mount gameplay-related routes
 app.use("/api/:username", gameplayRoutes); // All gameplay routes now include the username

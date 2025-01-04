@@ -6,6 +6,8 @@ const standButton = document.getElementById("stand");
 const username = "pfen"; // Replace with a dynamic value if needed
 const youLoseElement = document.getElementById("youlose")
 const youWinElement = document.getElementById("youwin")
+const cheatSheetButton = document.getElementById("cheat-sheet-button");
+const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 
 // delay utility function
 function delay(ms) {
@@ -61,7 +63,7 @@ async function fetchWinPercentage(username) {
         } else if (winPercentage < 50 && winPercentage >= 42) {
             document.getElementById("win-percentage-num").style.color = "orange"
         } else {
-            document.getElementById("win-percentage-num").style.color = "blue"
+            document.getElementById("win-percentage-num").style.color = "lightblue"
         }
 
         // Update the HTML with the win percentage
@@ -89,6 +91,7 @@ if (hitButton) {
                 youLoseElement.style.display = "block"
                 standButton.style.display = "none"
                 hitButton.style.display = "none"
+                await fetch("/api/" + username + "/loss", { method: "POST" });
                 await delay(500)
                 await resetHands();
                 location.reload();
@@ -105,6 +108,7 @@ if (hitButton) {
                     youWinElement.style.display = "block"
                     hitButton.style.display = "none"
                     standButton.style.display = "none"
+                    await fetch("/api/" + username + "/win", { method: "POST" });
                     await delay(700);
                     await resetHands();
                     location.reload();
@@ -118,3 +122,15 @@ if (hitButton) {
 } else {
     console.error("HIT button not found in the DOM.");
 }
+
+cheatSheetButton.addEventListener("click", async() => {
+    try {
+        if (cheatSheetPic.style.display == "block") {
+            cheatSheetPic.style.display = "none"
+        } else {
+            cheatSheetPic.style.display = "block"
+        }
+    } catch (err) {
+        console.error("cheat sheet button error")
+    }
+});

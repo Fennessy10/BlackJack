@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router(); // Use router to create modular routes
+const User = require("./models/User");
 
 let currentPlayerHand = 0;
 let currentDealerHand = 0;
@@ -75,6 +76,47 @@ router.post("/resetHands", (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while resetting hands." });
+    }
+});
+
+// Route to update wins
+router.post("/win", async (req, res) => {
+    try {
+        console.log("Username in gameplay route:", req.params.username);
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { wins: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        res.json({ message: "Win updated successfully.", user });
+    } catch (err) {
+        console.error("Error updating win:", err);
+        res.status(500).json({ error: "An error occurred while updating win." });
+    }
+});
+
+// Route to update losses
+router.post("/loss", async (req, res) => {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { losses: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        res.json({ message: "Loss updated successfully.", user });
+    } catch (err) {
+        console.error("Error updating loss:", err);
+        res.status(500).json({ error: "An error occurred while updating loss." });
     }
 });
 

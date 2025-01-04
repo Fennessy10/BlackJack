@@ -19,6 +19,7 @@ body {
     font-size: 3rem;
 }
 
+
 .card {
     text-align: center;
     background-color: transparent !important; /* important overrides bootstrap's default */
@@ -97,4 +98,23 @@ body {
 .youlose {
     color: red;
     display: none;
+}
+
+.img-rounded {
+    position: fixed;
+    top: 20%;
+    right: 1%;
+    width: 100%;
+    max-width: 30%;
+    height: auto;
+    display: none;
+}
+
+#cheat-sheet-button {
+    position: fixed; /* Position relative to the viewport */
+    top: 17%;    /* Offset from the bottom */
+    right: 11%;     /* Offset from the right */
+    width: 200px;    /* Button width */
+    height: 50px;    /* Button height */
+    font-size: 1.5rem; /* Button text size */
 }
