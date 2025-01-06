@@ -35,7 +35,7 @@ body {
 .playersHand {
     position: fixed;
     margin: 0px;
-    bottom: 25%;
+    bottom: 20%;
     text-align: center;
     transform: translateX(-50%); /* Adjusts for container width */
     left: 50%; /* Centers horizontally */
@@ -117,4 +117,45 @@ body {
     width: 300px;    /* Button width */
     height: 50px;    /* Button height */
     font-size: 1.5rem; /* Button text size */
+}
+
+.container-md {
+    position: fixed;
+    bottom: 25%;
+    left: 50%; /* Centers horizontally */
+    transform: translateX(-50%); /* Adjusts for container width */
+    display: flex; /* allows the buttons to narrow together by changing in size when close */
+    justify-content: center; /* Centers items horizontally within the container */
+    align-items: center; /* Centers items vertically within the container */
+    gap: 20px;
+}
+
+.container-md img {
+    max-width: 15%;
+    height: auto; /* Maintains the aspect ratio */
+
+}
+
+#card-1-pic {
+    display: none;
+}
+
+#card-2-pic {
+    display: none;
+}
+
+#card-3-pic {
+    display: none;
+}
+
+#card-4-pic {
+    display: none;
+}
+
+#card-5-pic {
+    display: none;
+}
+
+#player {
+    bottom: 10%;
 }
