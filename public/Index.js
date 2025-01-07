@@ -7,12 +7,55 @@ const youWinElement = document.getElementById("youwin")
 const cheatSheetButton = document.getElementById("cheat-sheet-button");
 const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 let hits = 0;
+const lossWaitDuration = 500; //ms
+const winWaitDuration = 700; //ms
 // const card1Pic = document.getElementById("card-one-pic");
 // const card2Pic = document.getElementById("card-two-pic");
 // const card3Pic = document.getElementById("card-three-pic");
 // const card4Pic = document.getElementById("card-four-pic");
 // const card5Pic = document.getElementById("card-five-pic");
+const chanceOfWinning = 42; // %
+const chanceOfBeatingTheHouse = 50; // %
 
+
+function getCardPic(cardNum) {
+    // Generate a random suit (1 to 4)
+    const suit = Math.floor(Math.random() * 4) + 1;
+    // Define suits and file naming convention
+    const suits = ["clubs", "diamonds", "hearts", "spades"];
+    const suitName = suits[suit - 1]; // Map suit number to name
+
+    const tenType = Math.floor(Math.random() * 4) + 1; // Generate a random number between 1 and 4
+    // Define tenType and file naming convention
+    const tenTypes = ["10", "jack", "queen", "king"];
+    const tenName = tenTypes[tenType - 1]; // Map ten to name
+
+    // Handle card numbers and return appropriate file name
+    switch (cardNum) {
+        case 1:
+            return `/PNG-cards-1.3/ace_of_${suitName}.png`;
+        case 2:
+            return `/PNG-cards-1.3/2_of_${suitName}.png`;
+        case 3:
+            return `/PNG-cards-1.3/3_of_${suitName}.png`;
+        case 4:
+            return `/PNG-cards-1.3/4_of_${suitName}.png`;
+        case 5:
+            return `/PNG-cards-1.3/5_of_${suitName}.png`;
+        case 6:
+            return `/PNG-cards-1.3/6_of_${suitName}.png`;
+        case 7:
+            return `/PNG-cards-1.3/7_of_${suitName}.png`;
+        case 8:
+            return `/PNG-cards-1.3/8_of_${suitName}.png`;
+        case 9:
+            return `/PNG-cards-1.3/9_of_${suitName}.png`;
+        case 10:
+            return `/PNG-cards-1.3/${tenName}_of_${suitName}.png`
+        default:
+            return "/PNG-cards-1.3/invalid_card.png"; // Return a default for invalid card numbers
+    }
+}
 
 // delay utility function
 function delay(ms) {
@@ -47,7 +90,7 @@ async function lossOccurance() {
     standButton.style.display = "none"
     hitButton.style.display = "none"
     await fetch("/api/" + username + "/loss", { method: "POST" });
-    await delay(500)
+    await delay(lossWaitDuration) 
     await resetHands();
     location.reload();
 }
@@ -58,7 +101,7 @@ async function winOccurance() {
     hitButton.style.display = "none"
     standButton.style.display = "none"
     await fetch("/api/" + username + "/win", { method: "POST" });
-    await delay(700);
+    await delay(winWaitDuration);
     await resetHands();
     location.reload();
 }
@@ -66,7 +109,7 @@ async function winOccurance() {
 // on page load
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch("/api/" + username + "/currentHands"); // Corrected string interpolation
+        const response = await fetch("/api/" + username + "/currentHands"); 
         if (!response.ok) throw new Error("Failed to fetch current hands");
 
         const data = await response.json();
@@ -100,10 +143,12 @@ async function fetchWinPercentage(username) {
         const winPercentage = data.winPercentage.toFixed(2); // Format to 2 decimal places
 
         // change win percentage colour based on its number
-        if (winPercentage < 42) {
+        if (winPercentage < chanceOfWinning) {
             document.getElementById("win-percentage-num").style.color = "red"
-        } else if (winPercentage < 50 && winPercentage >= 42) {
+
+        } else if (winPercentage < chanceOfBeatingTheHouse && winPercentage >= chanceOfWinning) {
             document.getElementById("win-percentage-num").style.color = "orange"
+
         } else {
             document.getElementById("win-percentage-num").style.color = "lightblue"
         }
@@ -131,14 +176,21 @@ if (hitButton) {
             console.log("Player card data:", playerCardData); // Debugging line
 
             // playerScoreElement.textContent = playerCardData.card;
+            let newCardPic = getCardPic(playerCardData.card)
+            document.getElementById(`card-${hits}-pic`).src = newCardPic;
             document.getElementById(`card-${hits}-pic`).style.display = "block";
 
+            const response = await fetch("/api/" + username + "/currentHands"); 
+            if (!response.ok) throw new Error("Failed to fetch current hands");
+            const data = await response.json();
+            playerCurrentHand = data.playerCurrentHand;
+    
 
-            if (playerCardData.card > 21) { 
+            if (playerCurrentHand > 21) { 
                 lossOccurance();
 
             } else if (hits == 5) {
-                winOccurance(); // if after 5 hits the hand is less than 21 insta win
+                winOccurance(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
 
             } else {
                 // Fetch the updated dealer card
@@ -146,10 +198,16 @@ if (hitButton) {
                 if (!dealerCardResponse.ok) throw new Error("Failed to fetch dealer card");
 
                 const dealerCardData = await dealerCardResponse.json();
-
+                
                 // dealerScoreElement.textContent = dealerCardData.card;
 
-                if (dealerCardData.card > 21) {
+                // retrieve the total of the current Dealers hand after the new card has been introduced
+                const response = await fetch("/api/" + username + "/currentHands"); 
+                if (!response.ok) throw new Error("Failed to fetch current hands");
+                const data = await response.json();
+                dealerCurrentHand = data.dealerCurrentHand;
+
+                if (dealerCurrentHand > 21) {   // see if the dealers hand is allowed
                     winOccurance();
                 }
             }
