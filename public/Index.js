@@ -169,10 +169,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const data = await response.json();
 
     if (numberOfCardsInPlayersHand == 0) {
-        giveDealerCard(); // give the dealer 1 card off the rip
-        givePlayerCard();
-        await delay(100);
-        givePlayerCard(); //give player 2 cards off the rip
+        await giveDealerCard(); // give the dealer 1 card off the rip
+        await givePlayerCard();
+        await givePlayerCard(); //give player 2 cards off the rip
     }
 
 
@@ -221,40 +220,48 @@ async function fetchWinPercentage(username) {
 }
 
 // Add an event listener for the HIT button
-if (hitButton) {
-    hitButton.addEventListener("click", async () => {
-        try {
+hitButton.addEventListener("click", async () => {
+    try {
 
-            givePlayerCard();
+        await givePlayerCard();
 
-            updateHands();
+        updateHands();
 
 
-    
 
-            if (playerCurrentHand > 21) { 
-                lossOccurance();
 
-            } else if (numberOfCardsInPlayersHand == 5) {
-                winOccurance(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
+        if (playerCurrentHand > 21) { 
+            lossOccurance();
 
-            } else {
+        } else if (numberOfCardsInPlayersHand == 5) {
+            winOccurance(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
 
-                giveDealerCard();
+        } 
 
-                updateHands();
+    } catch (err) {
+        console.error("Error updating scores:", err);
+    }
+});
 
-                if (dealerCurrentHand > 21) {   // see if the dealers hand is allowed
-                    winOccurance();
-                }
-            }
-        } catch (err) {
-            console.error("Error updating scores:", err);
+standButton.addEventListener("click", async () => {
+    try {
+        hitButton.style.display = "none"
+
+        while (dealerCurrentHand < 17 || dealerCurrentHand < playerCurrentHand) {
+            await giveDealerCard()
+            await updateHands()
+        } 
+
+        if (dealerCurrentHand <= 21 && dealerCurrentHand >= playerCurrentHand) {
+            await lossOccurance();
+        } else {
+            await winOccurance();
         }
-    });
-} else {
-    console.error("HIT button not found in the DOM.");
-}
+
+    } catch (err) {
+        console.error("Error with stand button", err);
+    }
+});
 
 cheatSheetButton.addEventListener("click", async() => {
     try {
