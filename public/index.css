@@ -1,6 +1,7 @@
 body {
     /* ../ means you go up one directory */
-    background-image: url('/poker-table-background.avif');
+    background-image: url('/bg_green.png');
+    background-size: cover;
 }
 
 .button-container {
@@ -158,4 +159,10 @@ body {
 
 #player {
     bottom: 10%;
+}
+
+#dealersHandTotal{
+    left: 50%;
+    text-align: center;
+    color: yellow;
 }
