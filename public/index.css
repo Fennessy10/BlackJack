@@ -101,6 +101,10 @@ body {
     display: none;
 }
 
+.draw {
+    display: none;
+}
+
 .img-rounded {
     position: fixed;
     top: 20%;

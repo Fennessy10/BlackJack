@@ -4,6 +4,7 @@ const standButton = document.getElementById("stand");
 const username = "pfen"; // Replace with a dynamic value if needed
 const youLoseElement = document.getElementById("youlose")
 const youWinElement = document.getElementById("youwin")
+const drawElement = document.getElementById("draw")
 const cheatSheetButton = document.getElementById("cheat-sheet-button");
 const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 let numberOfCardsInPlayersHand = 0;
@@ -160,6 +161,16 @@ async function winOccurance() {
     location.reload();
 }
 
+async function drawOccurance() {
+    numberOfCardsInPlayersHand = 0;
+    drawElement.style.display = "block"
+    hitButton.style.display = "none"
+    standButton.style.display = "none"
+    await delay(lossWaitDuration);
+    await resetHands();
+    location.reload(); // reloads page
+}
+
 // on page load
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -252,8 +263,10 @@ standButton.addEventListener("click", async () => {
             await updateHands()
         } 
 
-        if (dealerCurrentHand <= 21 && dealerCurrentHand >= playerCurrentHand) {
+        if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
             await lossOccurance();
+        } else if (dealerCurrentHand == playerCurrentHand) {
+            await drawOccurance();
         } else {
             await winOccurance();
         }
