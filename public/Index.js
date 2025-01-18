@@ -10,7 +10,7 @@ const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 const againButton = document.getElementById("AGAIN");
 let numberOfCardsInPlayersHand = 0;
 let numberOfCardsInDealersHand = 0;
-const cardDealingDuration = 500; //ms
+const cardDealingDuration = 800; //ms
 const chanceOfWinning = 42; // %
 const chanceOfBeatingTheHouse = 50; // %
 let dealersTotalElement = document.getElementById("dealersHandTotal");
@@ -254,13 +254,9 @@ async function fetchWinPercentage(username) {
 // Add an event listener for the HIT button
 hitButton.addEventListener("click", async () => {
     try {
-
         await givePlayerCard();
 
         updateHands();
-
-
-
 
         if (playerCurrentHand > 21) { 
             lossOccurance();
