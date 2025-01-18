@@ -28,7 +28,7 @@ function addDealerCard() {
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
     currentDealerHand += addedCard;
-    return currentDealerHand;
+    return addedCard;
 
 }
 

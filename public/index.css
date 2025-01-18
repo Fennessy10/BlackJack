@@ -89,6 +89,7 @@ body {
     transform: translateX(-50%); /* Adjusts for container width */
     left: 50%; /* Centers horizontally */
     font-size: 8rem;
+    z-index: 10;
 }
 
 .youwin {
@@ -135,10 +136,29 @@ body {
     gap: 20px;
 }
 
+.container-dealer {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 80%; /* Fix the container width */
+    max-width: 800px; /* Optional: set a maximum container width */
+}
+
+.container-dealer img {
+    width: 20%; /* Fix the card width */
+    height: auto; /* Maintain aspect ratio */
+    max-width: none; /* Disable dynamic scaling */
+}
+
+
 .container-md img {
     max-width: 15%;
     height: auto; /* Maintains the aspect ratio */
-
 }
 
 #card-1-pic {
@@ -161,6 +181,27 @@ body {
     display: none;
 }
 
+#dealer-card-1-pic {
+    display: none;
+}
+
+#dealer-card-2-pic {
+    display: none;
+}
+
+#dealer-card-3-pic {
+    display: none;
+}
+
+#dealer-card-4-pic {
+    display: none;
+}
+
+#dealer-card-5-pic {
+    display: none;
+}
+
+
 #player {
     bottom: 10%;
 }
@@ -169,4 +210,37 @@ body {
     left: 50%;
     text-align: center;
     color: yellow;
+    top: 28%;
+    z-index: 6;
+    position: fixed;
+    translate: -50% -50%;
 }
+
+#playersHandTotal{
+    left: 50%;
+    translate: -50% -50%;
+    bottom: 47%;
+    position: fixed;
+    text-align: center;
+    color: yellow;
+    display: block;
+}
+
+#dealersHandTotal, #playersHandTotal {
+    font-size: 4rem;
+}
+
+#AGAIN {
+    position: fixed;
+    bottom: -5%;
+    text-align: center;
+    left: 50%; /* Centers horizontally */
+    transform: translate(-50%, -50%); /* Adjusts for container width and height */
+    width: 500px;
+    height: 200px;
+    font-size: 5rem;
+    display: none;
+}
+
+
+
