@@ -10,8 +10,7 @@ const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 const againButton = document.getElementById("AGAIN");
 let numberOfCardsInPlayersHand = 0;
 let numberOfCardsInDealersHand = 0;
-const lossWaitDuration = 1000000; //ms
-const winWaitDuration = 700; //ms
+const cardDealingDuration = 500; //ms
 const chanceOfWinning = 42; // %
 const chanceOfBeatingTheHouse = 50; // %
 let dealersTotalElement = document.getElementById("dealersHandTotal");
@@ -281,6 +280,7 @@ standButton.addEventListener("click", async () => {
         hitButton.style.display = "none"
 
         while (dealerCurrentHand < 17 || dealerCurrentHand < playerCurrentHand) {
+            await delay(cardDealingDuration);
             await giveDealerCard()
             await updateHands()
         } 
