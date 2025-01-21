@@ -17,10 +17,19 @@ let dealersTotalElement = document.getElementById("dealersHandTotal");
 let playersTotalElement = document.getElementById("playersHandTotal");
 let playerCurrentHand = 0;
 let dealerCurrentHand = 0;
+let dealerAceCount = 0;
+let playerAceCount = 0;
+
+function adjustForAces(handTotal, aceCount) {
+    while (handTotal > 21 && aceCount > 0) {
+        handTotal -= 10; // Reduce Ace from 11 to 1
+        aceCount--;
+    }
+    return { handTotal, aceCount };
+}
 
 
-
-function getCardPic(cardNum) {
+function getCardPic(cardNum, dealerReceival) {
     // Generate a random suit (1 to 4)
     const suit = Math.floor(Math.random() * 4) + 1;
     // Define suits and file naming convention
@@ -31,7 +40,12 @@ function getCardPic(cardNum) {
 
     // Handle card numbers and return appropriate file name
     switch (cardNum) {
-        case 1:
+        case 11:
+            if (dealerReceival){
+                dealerAceCount++;
+            } else {
+                playerAceCount++;
+            }
             return `/PNG-cards-1.3/ace_of_${suitName}.png`;
         case 2:
             return `/PNG-cards-1.3/2_of_${suitName}.png`;
@@ -77,7 +91,7 @@ async function giveDealerCard() {
         // Update the displayed dealer total in the DOM
         dealersTotalElement.textContent = dealerCurrentHand;
 
-        let newCardPic = getCardPic(dealerCardData.card)
+        let newCardPic = getCardPic(dealerCardData.card, true)
         let dealerCardElement = document.getElementById(`dealer-card-${numberOfCardsInDealersHand}-pic`);
 
         if (dealerCardElement) {
@@ -86,7 +100,7 @@ async function giveDealerCard() {
             await updateHands();
             dealersTotalElement.textContent = dealerCurrentHand;
             console.log("numberOfCardsInDealersHand: " + numberOfCardsInDealersHand);
-            console.log("player current total: " + dealerCurrentHand);
+            console.log("player current total: " + playerCurrentHand);
         } else {
             console.error(`Element with ID card-${numberOfCardsInDealersHand}-pic not found in the DOM.`);
         }
@@ -130,7 +144,12 @@ async function givePlayerCard() {
         const playerCardData = await playerCardResponse.json();
         console.log("Player card data:", playerCardData); // Debugging line
 
-        let newCardPic = getCardPic(playerCardData.card);
+        // const adjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
+        // playerCurrentHand = adjustedValues.handTotal;
+        // playerAceCount = adjustedValues.aceCount;
+
+
+        let newCardPic = getCardPic(playerCardData.card, false);
         const playerCardElement = document.getElementById(`card-${numberOfCardsInPlayersHand}-pic`);
         
         if (playerCardElement) {
@@ -162,10 +181,12 @@ async function sendCheatSettingToBrowser() {
 async function lossOccurance() {
     numberOfCardsInDealersHand = 0
     numberOfCardsInPlayersHand = 0;
+    dealerAceCount = 0;
+    playerAceCount = 0;
     youLoseElement.style.display = "block"
     standButton.style.display = "none"
     hitButton.style.display = "none"
-    await fetch("/api/" + username + "/loss", { method: "POST" });
+    await fetch("/api/" + username + "/loss", { method: "POST" }); //post a win to the gameplay js file
     await resetHands();
     againButton.style.display = "block"
 }
@@ -173,17 +194,21 @@ async function lossOccurance() {
 async function winOccurance() {
     numberOfCardsInDealersHand = 0
     numberOfCardsInPlayersHand = 0;
+    dealerAceCount = 0;
+    playerAceCount = 0;
     youWinElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
-    await fetch("/api/" + username + "/win", { method: "POST" });
+    await fetch("/api/" + username + "/win", { method: "POST" }); //post a win to the gameplay js file
     await resetHands();
     againButton.style.display = "block"
 }
 
 async function drawOccurance() {
-    numberOfCardsInDealersHand = 0
+    numberOfCardsInDealersHand = 0;
     numberOfCardsInPlayersHand = 0;
+    dealerAceCount = 0;
+    playerAceCount = 0;
     drawElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
@@ -258,9 +283,18 @@ hitButton.addEventListener("click", async () => {
 
         updateHands();
 
-        if (playerCurrentHand > 21) { 
-            lossOccurance();
+        console.log("ace count: " + playerAceCount)
 
+        if (playerCurrentHand > 21) { 
+            const adjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
+            playerCurrentHand = adjustedValues.handTotal;
+            playerAceCount = adjustedValues.aceCount;
+            console.log("ace(s) adjusted. player current total: " + playerCurrentHand);
+            playersTotalElement.textContent = playerCurrentHand;
+
+            if (playerCurrentHand > 21) {
+                lossOccurance();
+            } 
         } else if (numberOfCardsInPlayersHand == 5) {
             winOccurance(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
 
@@ -274,8 +308,9 @@ hitButton.addEventListener("click", async () => {
 standButton.addEventListener("click", async () => {
     try {
         hitButton.style.display = "none"
+        standButton.style.display = "none"
 
-        while (dealerCurrentHand < 17 || dealerCurrentHand < playerCurrentHand) {
+        while (dealerCurrentHand < 17) {
             await delay(cardDealingDuration);
             await giveDealerCard()
             await updateHands()

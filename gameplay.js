@@ -13,7 +13,7 @@ function getRandom(max) {
 
 // Helper function to get a random card for the player
 function addPlayerCard() {
-    const possibleHand = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
     currentPlayerHand += addedCard;
@@ -24,7 +24,7 @@ function addPlayerCard() {
 
 // Helper function to get a random card for the dealer
 function addDealerCard() {
-    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
     currentDealerHand += addedCard;
@@ -161,15 +161,7 @@ router.get("/toggleCheats", async (req, res) => {
     }
 });
 
-router.get("/getCardPic", async (req, res) => {
-    try {
-        let cardPic = getCardPic()
-        res.json({})
-    } catch (err) {
-        console.error("Error fetching card picture:", err);
-        res.status(500).json({ error: "An error occurred while fetching card picture." });
-    }
-})
+
 
 
 module.exports = { router };
