@@ -22,12 +22,11 @@ let playerAceCount = 0;
 
 function adjustForAces(handTotal, aceCount) {
     console.log("player ace count: " + playerAceCount);
-    let count = aceCount; // initialise so that acecount isn't affected outside the function
-    while (handTotal > 21 && aceCount > 0 && count > 0) {
+    while (handTotal > 21 && aceCount > 0) { // aceCount is used as a regular in-function while-loop count 
         handTotal -= 10; // Reduce Ace from 11 to 1
-        count--;
+        aceCount--; // this inner-function decrement does not effect the global variable input (i.e playerAceCount or dealerAceCount)
     }
-    return { handTotal, aceCount };
+    return handTotal;  // only returns the handTotal as this is the only thing that needs updating (not the aceCount)
 }
 
 
@@ -37,8 +36,6 @@ function getCardPic(cardNum, dealerReceival) {
     // Define suits and file naming convention
     const suits = ["clubs", "diamonds", "hearts", "spades"];
     const suitName = suits[suit - 1]; // Map suit number to name
-
-
 
     // Handle card numbers and return appropriate file name
     switch (cardNum) {
@@ -284,7 +281,7 @@ hitButton.addEventListener("click", async () => {
 
         if (playerCurrentHand > 21) { 
             const adjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
-            playerCurrentHand = adjustedValues.handTotal;
+            playerCurrentHand = adjustedValues;
             console.log("ace(s) adjusted. player current total: " + playerCurrentHand);
             playersTotalElement.textContent = playerCurrentHand;
 
