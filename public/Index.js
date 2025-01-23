@@ -280,8 +280,8 @@ hitButton.addEventListener("click", async () => {
         console.log("ace count: " + playerAceCount)
 
         if (playerCurrentHand > 21) { 
-            const adjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
-            playerCurrentHand = adjustedValues;
+            const playerAdjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
+            playerCurrentHand = playerAdjustedValues;
             console.log("ace(s) adjusted. player current total: " + playerCurrentHand);
             playersTotalElement.textContent = playerCurrentHand;
 
@@ -307,7 +307,10 @@ standButton.addEventListener("click", async () => {
         while (dealerCurrentHand < 17) {
             await delay(cardDealingDuration);
             await giveDealerCard()
-            await updateHands()
+            const dealerAdjustedValues = adjustForAces(dealerCurrentHand, dealerAceCount);
+            dealerCurrentHand = dealerAdjustedValues;
+            dealersTotalElement.textContent = dealerCurrentHand;
+            // await updateHands()
         } 
 
         if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
