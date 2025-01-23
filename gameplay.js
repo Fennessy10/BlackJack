@@ -5,11 +5,6 @@ const User = require("./models/User");
 let currentPlayerHand = 0;
 let currentDealerHand = 0;
 
-function getRandom(max) {
-    return Math.floor(Math.random() * max);
-}
-
-
 
 // Helper function to get a random card for the player
 function addPlayerCard() {
@@ -17,9 +12,7 @@ function addPlayerCard() {
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
     currentPlayerHand += addedCard;
-    // return currentPlayerHand;
     return addedCard;
-
 }
 
 // Helper function to get a random card for the dealer
@@ -29,7 +22,6 @@ function addDealerCard() {
     let addedCard = possibleHand[index];
     currentDealerHand += addedCard;
     return addedCard;
-
 }
 
 // Route to serve a random card for the player

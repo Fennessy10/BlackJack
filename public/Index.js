@@ -21,9 +21,11 @@ let dealerAceCount = 0;
 let playerAceCount = 0;
 
 function adjustForAces(handTotal, aceCount) {
-    while (handTotal > 21 && aceCount > 0) {
+    console.log("player ace count: " + playerAceCount);
+    let count = aceCount; // initialise so that acecount isn't affected outside the function
+    while (handTotal > 21 && aceCount > 0 && count > 0) {
         handTotal -= 10; // Reduce Ace from 11 to 1
-        aceCount--;
+        count--;
     }
     return { handTotal, aceCount };
 }
@@ -143,11 +145,6 @@ async function givePlayerCard() {
         if (!playerCardResponse.ok) throw new Error("Failed to fetch player card");
         const playerCardData = await playerCardResponse.json();
         console.log("Player card data:", playerCardData); // Debugging line
-
-        // const adjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
-        // playerCurrentHand = adjustedValues.handTotal;
-        // playerAceCount = adjustedValues.aceCount;
-
 
         let newCardPic = getCardPic(playerCardData.card, false);
         const playerCardElement = document.getElementById(`card-${numberOfCardsInPlayersHand}-pic`);
@@ -281,21 +278,21 @@ hitButton.addEventListener("click", async () => {
     try {
         await givePlayerCard();
 
-        updateHands();
+        await updateHands();
 
         console.log("ace count: " + playerAceCount)
 
         if (playerCurrentHand > 21) { 
             const adjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
             playerCurrentHand = adjustedValues.handTotal;
-            playerAceCount = adjustedValues.aceCount;
             console.log("ace(s) adjusted. player current total: " + playerCurrentHand);
             playersTotalElement.textContent = playerCurrentHand;
 
             if (playerCurrentHand > 21) {
                 lossOccurance();
             } 
-        } else if (numberOfCardsInPlayersHand == 5) {
+        } 
+        if (numberOfCardsInPlayersHand == 5) {
             winOccurance(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
 
         } 
