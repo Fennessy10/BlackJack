@@ -313,6 +313,7 @@ standButton.addEventListener("click", async () => {
             // await updateHands()
         } 
 
+
         if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
             await lossOccurance();
         } else if (dealerCurrentHand == playerCurrentHand) {
