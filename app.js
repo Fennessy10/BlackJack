@@ -2,6 +2,7 @@ const express = require("express"); //enable express which allows routing
 const mongoose = require("mongoose"); //enable mongodb
 const User = require("./models/User");
 const { router: gameplayRoutes } = require("./gameplay");
+const { router: cheatsRoutes } = require("./cheats"); // Import cheats routes
 
 
 const PORT_NUMBER = 8080;
@@ -80,4 +81,5 @@ app.get("/api/:username", async (req, res) => {
 
 // Mount gameplay-related routes
 app.use("/api/:username", gameplayRoutes); // All gameplay routes now include the username
+app.use("/api/:username", cheatsRoutes); // All gameplay routes now include the username
 run();
