@@ -40,6 +40,7 @@ async function generateDealerCard() {
         if (!newCardPic) {
             throw new Error("card pic json data error");
         }
+        
         return newCardPic;
 }
 
@@ -58,12 +59,8 @@ async function giveDealerCard() {
         const newCardPic = await generateDealerCard();
 
         // retrives newly created card data from dealer stats api
-        const data = await currentDealerStats();
-        const numberOfCardsInDealersHand = data.numberOfCardsInDealersHand
-        const currentDealerHand = data.currentDealerHand;
+        const numberOfCardsInDealersHand = await updateDealerHand();
 
-        // uses card data to update browser dealers total number and give new catd pic
-        dealersTotalElement.textContent = currentDealerHand;
         const dealerCardElement = document.getElementById(`dealer-card-${numberOfCardsInDealersHand}-pic`);
 
 
@@ -85,12 +82,9 @@ async function givePlayerCard() {
         const newCardPic = await generatePlayerCard();
 
         // retrives newly created card data from player stats api
-        const data = await currentPlayerStats();
-        const numberOfCardsInPlayersHand = data.numberOfCardsInPlayersHand
-        const currentPlayerHand = data.currentPlayerHand;
+        const numberOfCardsInPlayersHand = await updatePlayerHand();
 
         // uses card data to update browser player total number and give new catd pic
-        playersTotalElement.textContent = currentPlayerHand;
         const playerCardElement = document.getElementById(`card-${numberOfCardsInPlayersHand}-pic`);
 
         if (playerCardElement) {
@@ -104,29 +98,7 @@ async function givePlayerCard() {
     }
 }
 
-
-// async function currentHands() {
-//     try {
-//         const response = await fetch("/api/" + username + "/currentHands"); 
-//         if (!response.ok) throw new Error("Failed to fetch current hands");
-//         const data = await response.json();
-//         playersTotalElement.textContent = data.playerCurrentHand;
-//         dealersTotalElement.textContent = data.dealerCurrentHand;
-
-
-//         const playerCardElement = document.getElementById(`dealer-card-${data.numberOfCardsInPlayersHand}-pic`);
-//         if (playerCardElement) {
-//             console.log("numberOfCardsInPlayersHand: " + data.numberOfCardsInPlayersHand);
-//         } else {
-//             console.error(`Element with ID card-${numberOfCardsInPlayersHand}-pic not found in the DOM.`);
-//         }
-
-//     } catch (err) {
-//         console.error("Error updating hands:", err);
-//     }
-// }
-
-async function currentPlayerStats() {
+async function updatePlayerHand() {
     try {
         const response = await fetch("/api/" + username + "/currentPlayerStats"); 
         if (!response.ok) throw new Error("Failed to fetch currentPlayerStats");
@@ -135,14 +107,19 @@ async function currentPlayerStats() {
             throw new Error("Invalid data format for currentPlayerStats");
         }
         console.log("Player Stats:", data);
-        return data
+        const numberOfCardsInPlayersHand = data.numberOfCardsInPlayersHand
+        const currentPlayerHand = data.currentPlayerHand;
+
+        // uses card data to update browser player total number
+        playersTotalElement.textContent = currentPlayerHand;
+        return numberOfCardsInPlayersHand;
 
     } catch (err) {
         console.error("Error retrieving currentPlayerStats:", err);
     }
 }
 
-async function currentDealerStats() {
+async function updateDealerHand() {
     try {
         const response = await fetch("/api/" + username + "/currentDealerStats"); 
         if (!response.ok) throw new Error("Failed to fetch currentDealerStats");
@@ -151,7 +128,12 @@ async function currentDealerStats() {
             throw new Error("Invalid data format for currentDealerStats");
         }
         console.log("Dealer Stats:", data);
-        return data
+        const numberOfCardsInDealersHand = data.numberOfCardsInDealersHand
+        const currentDealerHand = data.currentDealerHand;
+
+        // uses card data to update browser dealers total number and give new catd pic
+        dealersTotalElement.textContent = currentDealerHand;
+        return numberOfCardsInDealersHand
 
     } catch (err) {
         console.error("Error retrieving currentDealerStats:", err);
@@ -265,11 +247,14 @@ standButton.addEventListener("click", async () => {
     try {
         hitButton.style.display = "none"
         standButton.style.display = "none"
+        
+
 
         while (dealersTotalElement.textContent < 17) {
             await delay(cardDealingDuration);
-            await giveDealerCard();
+            await giveDealerCard()
         } 
+
 
     } catch (err) {
         console.error("Error with stand button", err);

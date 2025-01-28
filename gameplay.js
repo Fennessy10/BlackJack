@@ -2,16 +2,8 @@ const express = require("express");
 const router = express.Router(); // Use router to create modular routes
 const User = require("./models/User");
 
-function adjustForAces(handTotal, aceCount) {
-    console.log("player ace count: " + playerAceCount);
-    while (handTotal > 21 && aceCount > 0) { // aceCount is used as a regular in-function while-loop count 
-        handTotal -= 10; // Reduce Ace from 11 to 1
-        aceCount--; // this inner-function decrement does not effect the global variable input (i.e playerAceCount or dealerAceCount)
-    }
-    return handTotal;  // only returns the handTotal as this is the only thing that needs updating (not the aceCount)
-}
 
-async function winOccurance() {
+async function addWin() {
     try {
         console.log("Username in gameplay route:", req.params.username);
         // const { username } = req.params;
@@ -27,6 +19,25 @@ async function winOccurance() {
         console.log("win updated successfully")
     } catch (err) {
         console.error("Error updating win:", err);
+    }
+}
+
+async function addLoss() {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { losses: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        res.json({ message: "Loss updated successfully.", user });
+    } catch (err) {
+        console.error("Error updating loss:", err);
+        res.status(500).json({ error: "An error occurred while updating loss." });
     }
 }
 
@@ -68,6 +79,99 @@ function getCardPic(cardNum) {
     }
 }
 
+async function resetDealersAceCount() {
+    try {
+        // const { username } = req.params;
+        const username = "pfen"; // Replace with dynamic username if needed
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { dealerAceCount: 0 }, // Set currentPlayerHand to the new value
+            { new: true }
+        );
+        if (!user) {
+            console.error("User not found");
+            return;
+        }
+    } catch (err) {
+        console.error("Error attempting to reset value of dealers's acecount", err);
+    }
+}
+
+async function resetPlayersAceCount() {
+    try {
+        // const { username } = req.params;
+        const username = "pfen"; // Replace with dynamic username if needed
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { playerAceCount: 0 }, // Set currentPlayerHand to the new value
+            { new: true }
+        );
+        if (!user) {
+            console.error("User not found");
+            return;
+        }
+    } catch (err) {
+        console.error("Error attempting to reset value of player's acecount", err);
+    }
+}
+
+async function getPlayersAceCount() {
+    // const username = req.params.username.toLowerCase(); // Get the username from the route params
+    const username = "pfen"
+
+    // Find the user in the database
+    const user = await User.findOne({ user_name: username });
+
+    // return playerAceCount from db
+    return user.playerAceCount
+}
+
+async function getDealersAceCount() {
+    // const username = req.params.username.toLowerCase(); // Get the username from the route params
+    const username = "pfen"
+
+    // Find the user in the database
+    const user = await User.findOne({ user_name: username });
+
+    // return dealerAceCount from db
+    return user.dealerAceCount
+}
+
+async function adjustAcesForPlayer() {
+    const aceCount = getPlayersAceCount();
+
+    // retrieve current dealerhand from db
+    const playerCurrentHand = await getCurrentPlayerHand();
+
+    // account for aces if the hand is now above 17
+    if (playerCurrentHand < 17) {
+        while (playerCurrentHand > 21 && aceCount > 0 && playerCurrentHand < 17) { 
+            playerCurrentHand -= 10; // Reduce playerCurrentHand from 11 to 1
+            aceCount--; 
+        }
+        SetValueOfPlayersHand(playerCurrentHand);
+        resetPlayersAceCount();
+    } 
+}
+
+async function adjustAcesForDealer() {
+    const aceCount = getDealersAceCount();
+
+    // retrieve current dealerhand from db
+    const dealerCurrentHand = await getCurrentDealerHand();
+
+    // account for aces if the hand is now above 17
+    if (dealerCurrentHand < 17) {
+        while (dealerCurrentHand > 21 && aceCount > 0 && dealerCurrentHand < 17) { 
+            dealerCurrentHand -= 10; // Reduce dealerCurrentHand from 11 to 1
+            aceCount--; 
+        }
+        SetValueOfDealersHand(dealerCurrentHand);
+        resetDealersAceCount();
+    } 
+}
+
+
 function checkPlayersHand() {
     if (playerCurrentHand > 21) { 
         const playerAdjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
@@ -76,32 +180,52 @@ function checkPlayersHand() {
         playersTotalElement.textContent = playerCurrentHand;
 
         if (playerCurrentHand > 21) {
-            lossOccurance();
+            addLoss();
         } 
     } 
     if (numberOfCardsInPlayersHand == 5) {
-        winOccurance(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
+        addWin(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
 
     } 
 }
 
-async function checkDealersHand() {
-    while (dealerCurrentHand < 17) {
-        await delay(cardDealingDuration);
-        await giveDealerCard()
-        const dealerAdjustedValues = adjustForAces(dealerCurrentHand, dealerAceCount);
-        dealerCurrentHand = dealerAdjustedValues;
-        dealersTotalElement.textContent = dealerCurrentHand;
-        // await updateHands()
-    } 
+async function getCurrentDealerHand(){
+    // const username = req.params.username.toLowerCase(); // Get the username from the route params
+    const username = "pfen"
 
-    if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
-        await lossOccurance();
-    } else if (dealerCurrentHand == playerCurrentHand) {
-        await drawOccurance();
-    } else {
-        await winOccurance();
+    // Find the user in the database
+    const user = await User.findOne({ user_name: username });
+
+    // return current dealerhand from db
+    return user.currentDealerHand
+}
+
+async function getCurrentPlayerHand(){
+    // const username = req.params.username.toLowerCase(); // Get the username from the route params
+    const username = "pfen"
+
+    // Find the user in the database
+    const user = await User.findOne({ user_name: username });
+
+    // return current playerhand from db
+    return user.currentPlayerHand
+}
+
+async function CheckDealersHand() {
+    dealerCurrentHand = await getCurrentDealerHand();
+
+    if (dealerCurrentHand < 17) { //check 
+        if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
+            await addLoss(); //player loses
+            return "loss"
+        } else if (dealerCurrentHand == playerCurrentHand) {
+            return "draw"
+        } else {
+            await addWin();
+            return "win"
+        }
     }
+
 }
 
 function createRandomCard() {
@@ -182,6 +306,43 @@ async function incrementPlayersAceCount() {
     }
 }
 
+async function SetValueOfDealersHand(newValue) {
+    try {
+        // const { username } = req.params;
+        const username = "pfen"; // Replace with dynamic username if needed
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { currentDealerHand: newValue }, // Set currentDealerHand to the new value
+            { new: true }
+        );
+        if (!user) {
+            console.error("User not found");
+            return;
+        }
+        console.log("Set value of dealer's hand successfully:", user.currentDealerHand);
+    } catch (err) {
+        console.error("Error attempting to set value of dealer's hand", err);
+    }
+}
+
+async function SetValueOfPlayersHand(newValue) {
+    try {
+        // const { username } = req.params;
+        const username = "pfen"; // Replace with dynamic username if needed
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { currentPlayerHand: newValue }, // Set currentPlayerHand to the new value
+            { new: true }
+        );
+        if (!user) {
+            console.error("User not found");
+            return;
+        }
+        console.log("Set value of player's hand successfully:", user.currentPlayerHand);
+    } catch (err) {
+        console.error("Error attempting to set value of player's hand", err);
+    }
+}
 
 async function addValueToDealersHand(addedValue) {
     try {
@@ -245,6 +406,8 @@ async function addPlayerCard() {
         if (newCardValue == 11) {
             incrementPlayersAceCount();
         }
+        // check players hand
+        checkPlayersHand();
         addValueToPlayersHand(newCardValue);
         return newCardValue
     } catch (error) {
@@ -255,8 +418,8 @@ async function addPlayerCard() {
 // Route to serve a random card for the player
 router.get("/playerCard", async (req, res) => {
     try {
-        const cardValue = await addPlayerCard(); // Call the function and get the value
-        res.json(getCardPic(cardValue)); // Respond with the value directly
+        const additionalPlayerCardOutcome = await addPlayerCard(); // Call the function and get the value
+        res.json(getCardPic(additionalPlayerCardOutcome)); // Respond with the value directly
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while getting a player card." });
@@ -266,9 +429,21 @@ router.get("/playerCard", async (req, res) => {
 // Route to serve a random card for the dealer
 router.get("/dealerCard", async (req, res) => {
     try {
-        const cardValue = await addDealerCard();
-        console.log(cardValue)
-        res.json(getCardPic(cardValue));
+        const newCardValue = await addDealerCard()
+        const additionalDealerCardOutcome = await CheckDealersHand();
+
+        // if adding a dealer card hasn't ended the game return a newCardPic
+        if (additionalDealerCardOutcome.typeof == Number) {
+            res.json(getCardPic(newCardValue));
+        } else if (additionalDealerCardOutcome == "win") {
+            res.json("win")
+        } else if (additionalDealerCardOutcome == "loss") {
+            res.json("loss")
+        } else if (additionalDealerCardOutcome == "draw") {
+            res.json("draw")
+        }
+
+        
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while getting a dealer card." });
@@ -364,31 +539,6 @@ router.post("/resetHands", async (req, res) => {
     } catch (err) {
         console.error("Error resetting hands:", err);
         res.status(500).json({ error: "An error occurred while resetting hands." });
-    }
-});
-
-// Route to update wins
-router.post("/win", async (req, res) => {
-    winOccurance();
-});
-
-// Route to update losses
-router.post("/loss", async (req, res) => {
-    try {
-        // const { username } = req.params;
-        username = "pfen"
-        const user = await User.findOneAndUpdate(
-            { user_name: username },
-            { $inc: { losses: 1 } },
-            { new: true }
-        );
-        if (!user) {
-            return res.status(404).json({ error: "User not found." });
-        }
-        res.json({ message: "Loss updated successfully.", user });
-    } catch (err) {
-        console.error("Error updating loss:", err);
-        res.status(500).json({ error: "An error occurred while updating loss." });
     }
 });
 
