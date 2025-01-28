@@ -8,17 +8,12 @@ const drawElement = document.getElementById("draw")
 const cheatSheetButton = document.getElementById("cheat-sheet-button");
 const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 const againButton = document.getElementById("AGAIN");
-let numberOfCardsInPlayersHand = 0;
-let numberOfCardsInDealersHand = 0;
 const cardDealingDuration = 800; //ms
 const chanceOfWinning = 42; // %
 const percentNeededToBeatHouse = 50; // %
 const dealersTotalElement = document.getElementById("dealersHandTotal");
 const playersTotalElement = document.getElementById("playersHandTotal");
-let playerCurrentHand = 0;
-let dealerCurrentHand = 0;
-let dealerAceCount = 0;
-let playerAceCount = 0;
+
 
 
 // delay utility function
@@ -26,28 +21,46 @@ function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function generatePlayerCard() {
+    // calls api that updates database current player hand and retrieves the card pic along with it
+    const response = await fetch("/api/" + username + "/playerCard");
+    if (!response.ok) throw new Error("Failed to fetch player card route");
+    const newCardPic = await response.json();
+    if (!newCardPic) {
+        throw new Error("card pic json data error");
+    }
+    return newCardPic;
+}
+
+async function resetHands() {
+    try {
+        await fetch("/api/" + username + "/resetHands", { method: "POST" });
+
+    } catch (err) {
+        console.error("Error calling resetHands API:", err);
+    }
+}
+
 async function giveDealerCard() {
     try {
-        numberOfCardsInDealersHand++;
-        const dealerCardResponse = await fetch("/api/" + username + "/dealerCard");
-        if (!dealerCardResponse.ok) throw new Error("Failed to fetch dealer card");
+        const data = await currentDealerStats();
 
-        let dealerCardData = await dealerCardResponse.json();
-        dealerCurrentHand = dealerCardData.card;
+        const numberOfCardsInDealersHand = data.numberOfCardsInDealersHand
 
-        // Update the displayed dealer total in the DOM
-        dealersTotalElement.textContent = dealerCurrentHand;
+        const dealerCardElement = document.getElementById(`dealer-card-${numberOfCardsInDealersHand}-pic`);
 
-        let newCardPic = getCardPic(dealerCardData.card, true)
-        let dealerCardElement = document.getElementById(`dealer-card-${numberOfCardsInDealersHand}-pic`);
 
         if (dealerCardElement) {
-            dealerCardElement.src = newCardPic;
+            const response = await fetch("/api/" + username + "/dealerCard"); 
+            if (!response.ok) throw new Error("Failed to fetch dealerCardPic");
+            dealerCardElement.src = await response.json();
+
             dealerCardElement.style.display = "block";
-            await currentHands();
-            dealersTotalElement.textContent = dealerCurrentHand;
+
+            const data = await currentDealerStats()
+            dealersTotalElement.textContent = data.currentDealerHand;
+
             console.log("numberOfCardsInDealersHand: " + numberOfCardsInDealersHand);
-            console.log("player current total: " + playerCurrentHand);
         } else {
             console.error(`Element with ID card-${numberOfCardsInDealersHand}-pic not found in the DOM.`);
         }
@@ -57,39 +70,23 @@ async function giveDealerCard() {
     }
 }
 
-
-async function currentHands() {
-    try {
-        const response = await fetch("/api/" + username + "/currentHands"); 
-        if (!response.ok) throw new Error("Failed to fetch current hands");
-        const data = await response.json();
-        playersTotalElement.textContent = data.playerCurrentHand;
-        dealersTotalElement.textContent = data.dealerCurrentHand;
-
-    } catch (err) {
-        console.error("Error updating hands:", err);
-    }
-}
-
 async function givePlayerCard() {
     try {
-        numberOfCardsInPlayersHand++;
-        // Fetch the updated player card
-        const playerCardResponse = await fetch("/api/" + username + "/playerCard");
-        if (!playerCardResponse.ok) throw new Error("Failed to fetch player card");
-        const playerCardData = await playerCardResponse.json();
-        console.log("Player card data:", playerCardData); // Debugging line
+        // calls api that updates database current player hand and retrieves the card pic along with it
+        const newCardPic = await generatePlayerCard();
 
-        let newCardPic = getCardPic(playerCardData.card, false);
+        // retrives newly created card data from player stats api
+        const data = await currentPlayerStats();
+        const numberOfCardsInPlayersHand = data.numberOfCardsInPlayersHand
+        const currentPlayerHand = data.currentPlayerHand;
+
+        // uses card data to update browser player total number and give new catd pic
+        playersTotalElement.textContent = currentPlayerHand;
         const playerCardElement = document.getElementById(`card-${numberOfCardsInPlayersHand}-pic`);
-        
+
         if (playerCardElement) {
             playerCardElement.src = newCardPic;
             playerCardElement.style.display = "block";
-            await currentHands();
-            playersTotalElement.textContent = playerCurrentHand;
-            console.log("numberOfCardsInPlayersHand: " + numberOfCardsInPlayersHand);
-            console.log("player current total: " + playerCurrentHand);
         } else {
             console.error(`Element with ID card-${numberOfCardsInPlayersHand}-pic not found in the DOM.`);
         }
@@ -97,6 +94,62 @@ async function givePlayerCard() {
         console.error("Error in givePlayerCard:", error);
     }
 }
+
+
+// async function currentHands() {
+//     try {
+//         const response = await fetch("/api/" + username + "/currentHands"); 
+//         if (!response.ok) throw new Error("Failed to fetch current hands");
+//         const data = await response.json();
+//         playersTotalElement.textContent = data.playerCurrentHand;
+//         dealersTotalElement.textContent = data.dealerCurrentHand;
+
+
+//         const playerCardElement = document.getElementById(`dealer-card-${data.numberOfCardsInPlayersHand}-pic`);
+//         if (playerCardElement) {
+//             console.log("numberOfCardsInPlayersHand: " + data.numberOfCardsInPlayersHand);
+//         } else {
+//             console.error(`Element with ID card-${numberOfCardsInPlayersHand}-pic not found in the DOM.`);
+//         }
+
+//     } catch (err) {
+//         console.error("Error updating hands:", err);
+//     }
+// }
+
+async function currentPlayerStats() {
+    try {
+        const response = await fetch("/api/" + username + "/currentPlayerStats"); 
+        if (!response.ok) throw new Error("Failed to fetch currentPlayerStats");
+        const data = await response.json();
+        if (!data || typeof data.numberOfCardsInPlayersHand !== "number") {
+            throw new Error("Invalid data format for currentPlayerStats");
+        }
+        console.log("Player Stats:", data);
+        return data
+
+    } catch (err) {
+        console.error("Error retrieving currentPlayerStats:", err);
+    }
+}
+
+async function currentDealerStats() {
+    try {
+        const response = await fetch("/api/" + username + "/currentDealerStats"); 
+        if (!response.ok) throw new Error("Failed to fetch currentDealerStats");
+        const data = await response.json();
+        if (!data || typeof data.numberOfCardsInDealersHand !== "number") {
+            throw new Error("Invalid data format for currentDealerStats");
+        }
+        console.log("Dealer Stats:", data);
+        return data
+
+    } catch (err) {
+        console.error("Error retrieving currentDealerStats:", err);
+    }
+}
+
+
 
 async function sendCheatSettingToBrowser() {
     const response = await fetch("/api/" + username + "/toggleCheats", { method: "GET" }) // get the current toggle setting just changed
@@ -113,8 +166,8 @@ async function lossOccurance() {
     youLoseElement.style.display = "block"
     standButton.style.display = "none"
     hitButton.style.display = "none"
-    await fetch("/api/" + username + "/loss", { method: "POST" }); //post a win to the gameplay js file
-    await currentHands();
+    // await fetch("/api/" + username + "/loss", { method: "POST" }); //post a win to the gameplay js file
+    // await currentHands();
     againButton.style.display = "block"
 }
 
@@ -122,8 +175,8 @@ async function winOccurance() {
     youWinElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
-    await fetch("/api/" + username + "/win", { method: "POST" }); //post a win to the gameplay js file
-    await currentHands();
+    // await fetch("/api/" + username + "/win", { method: "POST" }); //post a win to the gameplay js file
+    // await currentHands();
     againButton.style.display = "block"
 }
 
@@ -131,7 +184,7 @@ async function drawOccurance() {
     drawElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
-    await currentHands();
+    // await currentHands();
     againButton.style.display = "block"
 }
 
@@ -142,18 +195,11 @@ againButton.addEventListener("click", async () => {
 
 // on page load
 document.addEventListener("DOMContentLoaded", async () => {
-    currentHands();
-    try {
-        if (numberOfCardsInPlayersHand == 0) {
-            await giveDealerCard(); // give the dealer 1 card off the rip
-            await givePlayerCard();
-            await givePlayerCard(); //give player 2 cards off the rip
-        }
+    await resetHands();
 
-
-    } catch (error) {
-        console.error("Error fetching current hands:", error);
-    }
+    await giveDealerCard(); // give the dealer 1 card off the rip
+    await givePlayerCard();
+    await givePlayerCard(); //give player 2 cards off the rip
 
     // Fetch and display win percentage
     fetchWinPercentage(username);
@@ -198,15 +244,11 @@ async function fetchWinPercentage(username) {
 // Add an event listener for the HIT button
 hitButton.addEventListener("click", async () => {
     try {
+        // call index.js give player card function
         await givePlayerCard();
 
-        await currentHands();
-
-        currentHands();
-
-
     } catch (err) {
-        console.error("Error updating scores:", err);
+        console.error("hit button error", err);
     }
 });
 
@@ -215,9 +257,9 @@ standButton.addEventListener("click", async () => {
         hitButton.style.display = "none"
         standButton.style.display = "none"
 
-        currentHands();
+        // currentHands();
 
-        while (dealerCurrentHand < 17) {
+        while (dealersTotalElement.textContent < 17) {
             await delay(cardDealingDuration);
             await giveDealerCard();
         } 

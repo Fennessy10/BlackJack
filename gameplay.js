@@ -29,16 +29,15 @@ async function winOccurance() {
             { new: true }
         );
         if (!user) {
-            return res.status(404).json({ error: "User not found." });
+            console.error("user not found")
         }
-        res.json({ message: "Win updated successfully.", user });
+        console.log("win updated successfully")
     } catch (err) {
         console.error("Error updating win:", err);
-        res.status(500).json({ error: "An error occurred while updating win." });
     }
 }
 
-function getCardPic(cardNum, dealerReceival) {
+function getCardPic(cardNum) {
     // Generate a random suit (1 to 4)
     const suit = Math.floor(Math.random() * 4) + 1;
     // Define suits and file naming convention
@@ -48,11 +47,6 @@ function getCardPic(cardNum, dealerReceival) {
     // Handle card numbers and return appropriate file name
     switch (cardNum) {
         case 11:
-            if (dealerReceival){
-                dealerAceCount++;
-            } else {
-                playerAceCount++;
-            }
             return `/PNG-cards-1.3/ace_of_${suitName}.png`;
         case 2:
             return `/PNG-cards-1.3/2_of_${suitName}.png`;
@@ -117,29 +111,156 @@ async function checkDealersHand() {
     }
 }
 
-// Helper function to get a random card for the player
-function addPlayerCard() {
+function createRandomCard() {
     const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
     const index = Math.floor(Math.random() * possibleHand.length);
     let addedCard = possibleHand[index];
-    playerCurrentHand += addedCard;
     return addedCard;
+}
+
+
+async function incrementNumberOfDealersCards() {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { numberOfCardsInDealersHand: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("user not found")
+        }
+    } catch (err) {
+        console.error("Error incrementing number of cards in the dealers hand: ", err);
+    }
+}
+
+async function incrementNumberOfPlayersCards() {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { numberOfCardsInPlayersHand: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("user not found")
+        }
+    } catch (err) {
+        console.error("Error incrementing number of cards in the players hand: ", err);
+    }
+}
+
+async function incrementDealersAceCount() {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { dealerAceCount: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("user not found ", err);
+        }
+        console.log("incrementing number of aces in the dealers hand successful")
+    } catch (err) {
+        console.error("Error incrementing number of aces in the dealers hand: ", err);
+    }
+}
+
+async function incrementPlayersAceCount() {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { playerAceCount: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("User not found.")
+        }
+        console.error("incrementing number of aces in the players hand successful")
+    } catch (err) {
+        console.error("Error incrementing number of aces in the players hand: ", err);
+    }
+}
+
+
+async function addValueToDealersHand(addedValue) {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { currentDealerHand: addedValue } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("user not found")
+        }
+    } catch (err) {
+        console.error("Error attempting to add value to dealers hand ", err);
+    }
+}
+
+async function addValueToPlayersHand(addedValue) {
+    try {
+        // const { username } = req.params;
+        username = "pfen"
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { currentPlayerHand: addedValue } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("user not found")
+        }
+        console.log("added value to Players hand successfully")
+    } catch (err) {
+        console.error("Error attempting to add value to Players hand ", err);
+    }
 }
 
 // Helper function to get a random card for the dealer
-function addDealerCard() {
-    const possibleHand = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
-    const index = Math.floor(Math.random() * possibleHand.length);
-    let addedCard = possibleHand[index];
-    dealerCurrentHand += addedCard;
-    return addedCard;
+async function addDealerCard() {
+    try {
+        incrementNumberOfDealersCards();
+        const newCardValue = createRandomCard();
+        if (newCardValue == 11) {
+            incrementDealersAceCount();
+        }
+        addValueToPlayersHand(newCardValue);
+        return newCardValue
+
+    } catch (error) {
+        console.error("Error updating dealer card:", error);
+    }
+}
+
+
+async function addPlayerCard() {
+    try {
+        incrementNumberOfPlayersCards();
+        const newCardValue = createRandomCard();
+        if (newCardValue == 11) {
+            incrementPlayersAceCount();
+        }
+        addValueToDealersHand(newCardValue);
+        return newCardValue
+    } catch (error) {
+        console.error("Error in givePlayerCard:", error);
+    }
 }
 
 // Route to serve a random card for the player
-router.get("/playerCard", (req, res) => {
+router.get("/playerCard", async (req, res) => {
     try {
-        const card = addPlayerCard();
-        res.json({ card });
+        const cardValue = await addPlayerCard(); // Call the function and get the value
+        res.json(getCardPic(cardValue)); // Respond with the value directly
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while getting a player card." });
@@ -147,37 +268,104 @@ router.get("/playerCard", (req, res) => {
 });
 
 // Route to serve a random card for the dealer
-router.get("/dealerCard", (req, res) => {
+router.get("/dealerCard", async (req, res) => {
     try {
-        const card = addDealerCard();
-        res.json({ card });
+        const cardValue = await addDealerCard();
+        res.json(getCardPic(cardValue));
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while getting a dealer card." });
     }
 });
 
-// Route to get the current hands for both player and dealer
-router.get("/currentHands", (req, res) => {
-    res.json({
-        playerCurrentHand: playerCurrentHand,
-        dealerCurrentHand: dealerCurrentHand,
-    });
+
+// Route to get current hands for a specific user
+router.get("/currentPlayerStats", async (req, res) => {
+    try {
+        // const username = req.params.username.toLowerCase(); // Get the username from the route params
+        const username = "pfen"
+
+        // Find the user in the database
+        const user = await User.findOne({ user_name: username });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Extract the necessary fields from the user object
+        const currentPlayerStats = {
+            currentPlayerHand: user.currentPlayerHand,
+            numberOfCardsInPlayersHand: user.numberOfCardsInPlayersHand,
+        };
+
+        res.json(currentPlayerStats); // Respond with the current hands
+    } catch (err) {
+        console.error("Error retrieving currentPlayerHand stats:", err);
+        res.status(500).json({ error: "An error occurred while retrieving currentPlayerHand stats" });
+    }
 });
 
-// Route to reset hands for both player and dealer
-router.post("/resetHands", (req, res) => {
+router.get("/currentDealerStats", async (req, res) => {
     try {
-        playerCurrentHand = 0;
-        dealerCurrentHand = 0;
-        dealerAceCount = 0;
-        playerAceCount = 0;
-        numberOfCardsInPlayersHand = 0;
-        numberOfCardsInDealersHand = 0;
+        // const username = req.params.username.toLowerCase(); // Get the username from the route params
+        const username = "pfen"
 
-        res.json({ message: "Hands have been reset." });
+        // Find the user in the database
+        const user = await User.findOne({ user_name: username });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Extract the necessary fields from the user object
+        const currentDealerStats = {
+            currentDealerHand: user.currentDealerHand,
+            numberOfCardsInDealersHand: user.numberOfCardsInDealersHand,
+        };
+
+        res.json(currentDealerStats); // Respond with the current hands
     } catch (err) {
-        console.error(err);
+        console.error("Error retrieving currentDealerStats:", err);
+        res.status(500).json({ error: "An error occurred while retrieving currentDealerStats" });
+    }
+});
+
+// Route to reset hand-related fields in the database
+router.post("/resetHands", async (req, res) => {
+    try {
+        // const { username } = req.body; // Expecting `username` in the request body
+        username = "pfen"
+
+        // Ensure the username is provided
+        if (!username) {
+            return res.status(400).json({ error: "Username is required." });
+        }
+
+        // Find the user by username and reset the relevant fields
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            {
+                $set: {
+                    currentPlayerHand: 0,
+                    currentDealerHand: 0,
+                    dealerAceCount: 0,
+                    playerAceCount: 0,
+                    numberOfCardsInPlayersHand: 0,
+                    numberOfCardsInDealersHand: 0,
+                },
+            },
+            { new: true } // Return the updated user
+        );
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        // Respond with the updated user data
+        res.json({ message: "Hands have been reset.", user });
+    } catch (err) {
+        console.error("Error resetting hands:", err);
         res.status(500).json({ error: "An error occurred while resetting hands." });
     }
 });

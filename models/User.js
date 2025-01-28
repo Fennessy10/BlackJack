@@ -15,20 +15,44 @@ const userSchema = new mongoose.Schema({
     wins: {
         type: Number,
         Required: true,
-        min: 0
+        min: 0,
+        default: 0
     },
     losses: {
         type: Number,
         Required: true,
-        min: 0
+        min: 0,
+        default: 0
     },
     currentPlayerHand: {
         type: Number,
-        min: 0
+        min: 0,
+        default: 0
     },
     currentDealerHand: {
         type: Number,
-        min: 0
+        min: 0,
+        default: 0
+    },
+    numberOfCardsInPlayersHand: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+    numberOfCardsInDealersHand: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+    dealerAceCount: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+    playerAceCount: {
+        type: Number,
+        min: 0,
+        default: 0
     },
     createdAt: {
         type: Date,

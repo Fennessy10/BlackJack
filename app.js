@@ -44,14 +44,11 @@ async function run() {
     try {
         const user = new User({ // creates the user
             user_name: "pfen",
-            win_percentage: 0,
-            wins: 0,
-            losses: 0,
-            currentDealerHand: 0,
-            currentPlayerHand: 0,
         });
-        // console.log(user);
+        
         // Save the user to the database
+
+        // console.log(user);
         // await user.save();
     } catch (e) {
         console.error(e.message);
