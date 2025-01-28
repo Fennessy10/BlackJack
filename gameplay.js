@@ -2,13 +2,6 @@ const express = require("express");
 const router = express.Router(); // Use router to create modular routes
 const User = require("./models/User");
 
-let playerCurrentHand = 0;
-let dealerCurrentHand = 0;
-let dealerAceCount = 0;
-let playerAceCount = 0;
-let numberOfCardsInPlayersHand = 0;
-let numberOfCardsInDealersHand = 0;
-
 function adjustForAces(handTotal, aceCount) {
     console.log("player ace count: " + playerAceCount);
     while (handTotal > 21 && aceCount > 0) { // aceCount is used as a regular in-function while-loop count 
@@ -202,6 +195,7 @@ async function addValueToDealersHand(addedValue) {
         if (!user) {
             console.error("user not found")
         }
+        console.log("added value to Players hand successfully")
     } catch (err) {
         console.error("Error attempting to add value to dealers hand ", err);
     }
@@ -233,7 +227,9 @@ async function addDealerCard() {
         if (newCardValue == 11) {
             incrementDealersAceCount();
         }
-        addValueToPlayersHand(newCardValue);
+        addValueToDealersHand(newCardValue);
+        console.log("Dealer card value generated:", newCardValue);
+
         return newCardValue
 
     } catch (error) {
@@ -249,7 +245,7 @@ async function addPlayerCard() {
         if (newCardValue == 11) {
             incrementPlayersAceCount();
         }
-        addValueToDealersHand(newCardValue);
+        addValueToPlayersHand(newCardValue);
         return newCardValue
     } catch (error) {
         console.error("Error in givePlayerCard:", error);
@@ -271,6 +267,7 @@ router.get("/playerCard", async (req, res) => {
 router.get("/dealerCard", async (req, res) => {
     try {
         const cardValue = await addDealerCard();
+        console.log(cardValue)
         res.json(getCardPic(cardValue));
     } catch (err) {
         console.error(err);
@@ -394,10 +391,6 @@ router.post("/loss", async (req, res) => {
         res.status(500).json({ error: "An error occurred while updating loss." });
     }
 });
-
-
-
-
 
 
 module.exports = { router };

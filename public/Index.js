@@ -32,6 +32,17 @@ async function generatePlayerCard() {
     return newCardPic;
 }
 
+async function generateDealerCard() {
+        // calls api that updates database current dealer hand and retrieves the card pic along with it
+        const response = await fetch("/api/" + username + "/dealerCard");
+        if (!response.ok) throw new Error("Failed to fetch dealer card route");
+        const newCardPic = await response.json();
+        if (!newCardPic) {
+            throw new Error("card pic json data error");
+        }
+        return newCardPic;
+}
+
 async function resetHands() {
     try {
         await fetch("/api/" + username + "/resetHands", { method: "POST" });
@@ -43,24 +54,22 @@ async function resetHands() {
 
 async function giveDealerCard() {
     try {
+        // calls api that updates database current dealer hand and retrieves the card pic along with it
+        const newCardPic = await generateDealerCard();
+
+        // retrives newly created card data from dealer stats api
         const data = await currentDealerStats();
-
         const numberOfCardsInDealersHand = data.numberOfCardsInDealersHand
+        const currentDealerHand = data.currentDealerHand;
 
+        // uses card data to update browser dealers total number and give new catd pic
+        dealersTotalElement.textContent = currentDealerHand;
         const dealerCardElement = document.getElementById(`dealer-card-${numberOfCardsInDealersHand}-pic`);
 
 
         if (dealerCardElement) {
-            const response = await fetch("/api/" + username + "/dealerCard"); 
-            if (!response.ok) throw new Error("Failed to fetch dealerCardPic");
-            dealerCardElement.src = await response.json();
-
+            dealerCardElement.src = newCardPic
             dealerCardElement.style.display = "block";
-
-            const data = await currentDealerStats()
-            dealersTotalElement.textContent = data.currentDealerHand;
-
-            console.log("numberOfCardsInDealersHand: " + numberOfCardsInDealersHand);
         } else {
             console.error(`Element with ID card-${numberOfCardsInDealersHand}-pic not found in the DOM.`);
         }
@@ -256,8 +265,6 @@ standButton.addEventListener("click", async () => {
     try {
         hitButton.style.display = "none"
         standButton.style.display = "none"
-
-        // currentHands();
 
         while (dealersTotalElement.textContent < 17) {
             await delay(cardDealingDuration);
