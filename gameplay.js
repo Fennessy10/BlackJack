@@ -32,12 +32,11 @@ async function addLoss() {
             { new: true }
         );
         if (!user) {
-            return res.status(404).json({ error: "User not found." });
+            console.error("user not found")
         }
         res.json({ message: "Loss updated successfully.", user });
     } catch (err) {
         console.error("Error updating loss:", err);
-        res.status(500).json({ error: "An error occurred while updating loss." });
     }
 }
 
@@ -144,8 +143,8 @@ async function adjustAcesForPlayer() {
     const playerCurrentHand = await getCurrentPlayerHand();
 
     // account for aces if the hand is now above 17
-    if (playerCurrentHand < 17) {
-        while (playerCurrentHand > 21 && aceCount > 0 && playerCurrentHand < 17) { 
+    if (playerCurrentHand > 21 && aceCount > 0) {
+        while (playerCurrentHand > 21 && aceCount > 0) { 
             playerCurrentHand -= 10; // Reduce playerCurrentHand from 11 to 1
             aceCount--; 
         }
@@ -161,31 +160,13 @@ async function adjustAcesForDealer() {
     const dealerCurrentHand = await getCurrentDealerHand();
 
     // account for aces if the hand is now above 17
-    if (dealerCurrentHand < 17) {
-        while (dealerCurrentHand > 21 && aceCount > 0 && dealerCurrentHand < 17) { 
+    if (dealerCurrentHand > 21 && aceCount > 0) {
+        while (dealerCurrentHand > 21 && aceCount > 0) { 
             dealerCurrentHand -= 10; // Reduce dealerCurrentHand from 11 to 1
             aceCount--; 
         }
         SetValueOfDealersHand(dealerCurrentHand);
         resetDealersAceCount();
-    } 
-}
-
-
-function checkPlayersHand() {
-    if (playerCurrentHand > 21) { 
-        const playerAdjustedValues = adjustForAces(playerCurrentHand, playerAceCount);
-        playerCurrentHand = playerAdjustedValues;
-        console.log("ace(s) adjusted. player current total: " + playerCurrentHand);
-        playersTotalElement.textContent = playerCurrentHand;
-
-        if (playerCurrentHand > 21) {
-            addLoss();
-        } 
-    } 
-    if (numberOfCardsInPlayersHand == 5) {
-        addWin(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
-
     } 
 }
 
@@ -211,10 +192,39 @@ async function getCurrentPlayerHand(){
     return user.currentPlayerHand
 }
 
+async function getNumberOfCardsInPlayersHand() {
+    // const username = req.params.username.toLowerCase(); // Get the username from the route params
+    const username = "pfen"
+
+    // Find the user in the database
+    const user = await User.findOne({ user_name: username });
+
+    // return current playerhand from db
+    return user.numberOfCardsInPlayersHand
+}
+
+async function CheckPlayersHand() {
+    playerCurrentHand = await getCurrentPlayerHand();
+    const numberOfCardsInPlayersHand = await getNumberOfCardsInPlayersHand();
+
+    if (playerCurrentHand > 21) {
+        addLoss();
+        return "loss"
+    } 
+
+    if (numberOfCardsInPlayersHand == 5) {
+        addWin(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
+        return "Charlie-win"
+    } 
+
+    return "continue"
+}
+
 async function CheckDealersHand() {
     dealerCurrentHand = await getCurrentDealerHand();
+    playerCurrentHand = await getCurrentPlayerHand();
 
-    if (dealerCurrentHand < 17) { //check 
+    if (dealerCurrentHand > 17) { //check 
         if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
             await addLoss(); //player loses
             return "loss"
@@ -224,6 +234,8 @@ async function CheckDealersHand() {
             await addWin();
             return "win"
         }
+    } else {
+        return "continue"
     }
 
 }
@@ -407,7 +419,7 @@ async function addPlayerCard() {
             incrementPlayersAceCount();
         }
         // check players hand
-        checkPlayersHand();
+        CheckPlayersHand();
         addValueToPlayersHand(newCardValue);
         return newCardValue
     } catch (error) {
@@ -418,8 +430,27 @@ async function addPlayerCard() {
 // Route to serve a random card for the player
 router.get("/playerCard", async (req, res) => {
     try {
-        const additionalPlayerCardOutcome = await addPlayerCard(); // Call the function and get the value
-        res.json(getCardPic(additionalPlayerCardOutcome)); // Respond with the value directly
+        const newCardValue = await addPlayerCard()
+        await adjustAcesForPlayer();
+        const additionalPlayerCardOutcome = await CheckPlayersHand(); // Call the function and get the value
+
+        if (additionalPlayerCardOutcome == "win") {
+            res.json("win")
+        } else if (additionalPlayerCardOutcome == "loss") {
+            res.json("loss")
+        } else if (additionalPlayerCardOutcome == "draw") {
+            res.json("draw")
+        } else if (additionalPlayerCardOutcome == "continue") { // if adding dealer card hasn't ended game return newCardPic
+            res.json(getCardPic(newCardValue));
+        } else if (additionalPlayerCardOutcome == "Charlie-win") {
+            res.json("Charlie-win")
+            // res.json({
+            //     items: cart.generateArray(),
+            //     totalPrice: cart.totalPrice
+            // });
+        } else {
+            res.status(500).json({ error: "An error occurred while finding outcome in gameplay.js" });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while getting a player card." });
@@ -430,17 +461,18 @@ router.get("/playerCard", async (req, res) => {
 router.get("/dealerCard", async (req, res) => {
     try {
         const newCardValue = await addDealerCard()
+        await adjustAcesForDealer();
         const additionalDealerCardOutcome = await CheckDealersHand();
 
-        // if adding a dealer card hasn't ended the game return a newCardPic
-        if (additionalDealerCardOutcome.typeof == Number) {
-            res.json(getCardPic(newCardValue));
-        } else if (additionalDealerCardOutcome == "win") {
+        
+        if (additionalDealerCardOutcome == "win") {
             res.json("win")
         } else if (additionalDealerCardOutcome == "loss") {
             res.json("loss")
         } else if (additionalDealerCardOutcome == "draw") {
             res.json("draw")
+        } else if (additionalDealerCardOutcome == "continue") { // if adding dealer card hasn't ended game return newCardPic
+            res.json(await getCardPic(newCardValue));
         }
 
         

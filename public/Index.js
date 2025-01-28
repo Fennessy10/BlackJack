@@ -21,27 +21,40 @@ function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function CheckOutcome(outcome) {
+    if (outcome == "win") {
+        winOccurance();
+    } else if (outcome == "loss") {
+        lossOccurance();
+    } else if (outcome == "draw") {
+        drawOccurance()
+    } else if (outcome == "Charlie-win") {
+        winOccurance();
+    }
+}
+
 async function generatePlayerCard() {
     // calls api that updates database current player hand and retrieves the card pic along with it
     const response = await fetch("/api/" + username + "/playerCard");
     if (!response.ok) throw new Error("Failed to fetch player card route");
-    const newCardPic = await response.json();
-    if (!newCardPic) {
+    const outcome = await response.json();
+    if (!outcome) {
         throw new Error("card pic json data error");
     }
-    return newCardPic;
+    CheckOutcome(outcome);
+    return outcome;
 }
 
 async function generateDealerCard() {
-        // calls api that updates database current dealer hand and retrieves the card pic along with it
-        const response = await fetch("/api/" + username + "/dealerCard");
-        if (!response.ok) throw new Error("Failed to fetch dealer card route");
-        const newCardPic = await response.json();
-        if (!newCardPic) {
-            throw new Error("card pic json data error");
-        }
-        
-        return newCardPic;
+    // calls api that updates database current dealer hand and retrieves the card pic along with it
+    const response = await fetch("/api/" + username + "/dealerCard");
+    if (!response.ok) throw new Error("Failed to fetch dealer card route");
+    const outcome = await response.json();
+    if (!outcome) {
+        throw new Error("card pic json data error");
+    }
+    CheckOutcome(outcome);
+    return outcome;
 }
 
 async function resetHands() {
@@ -157,8 +170,6 @@ async function lossOccurance() {
     youLoseElement.style.display = "block"
     standButton.style.display = "none"
     hitButton.style.display = "none"
-    // await fetch("/api/" + username + "/loss", { method: "POST" }); //post a win to the gameplay js file
-    // await currentHands();
     againButton.style.display = "block"
 }
 
@@ -166,8 +177,6 @@ async function winOccurance() {
     youWinElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
-    // await fetch("/api/" + username + "/win", { method: "POST" }); //post a win to the gameplay js file
-    // await currentHands();
     againButton.style.display = "block"
 }
 
@@ -175,7 +184,6 @@ async function drawOccurance() {
     drawElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
-    // await currentHands();
     againButton.style.display = "block"
 }
 
