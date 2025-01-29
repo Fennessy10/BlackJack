@@ -433,21 +433,34 @@ router.get("/playerCard", async (req, res) => {
         const newCardValue = await addPlayerCard()
         await adjustAcesForPlayer();
         const additionalPlayerCardOutcome = await CheckPlayersHand(); // Call the function and get the value
+        console.log(additionalPlayerCardOutcome);
 
+        console.log(newCardValue)
         if (additionalPlayerCardOutcome == "win") {
-            res.json("win")
+            res.json({
+                outcome: "win",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalPlayerCardOutcome == "loss") {
-            res.json("loss")
+            res.json({
+                outcome: "loss",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalPlayerCardOutcome == "draw") {
-            res.json("draw")
+            res.json({
+                outcome: "draw",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalPlayerCardOutcome == "continue") { // if adding dealer card hasn't ended game return newCardPic
-            res.json(getCardPic(newCardValue));
+            res.json({
+                outcome: "continue",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalPlayerCardOutcome == "Charlie-win") {
-            res.json("Charlie-win")
-            // res.json({
-            //     items: cart.generateArray(),
-            //     totalPrice: cart.totalPrice
-            // });
+            res.json({
+                outcome: "Charlie-win",
+                cardPic: getCardPic(newCardValue)
+            });
         } else {
             res.status(500).json({ error: "An error occurred while finding outcome in gameplay.js" });
         }
@@ -466,13 +479,27 @@ router.get("/dealerCard", async (req, res) => {
 
         
         if (additionalDealerCardOutcome == "win") {
-            res.json("win")
+            res.json({
+                outcome: "win",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalDealerCardOutcome == "loss") {
-            res.json("loss")
+            res.json({
+                outcome: "loss",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalDealerCardOutcome == "draw") {
-            res.json("draw")
+            res.json({
+                outcome: "draw",
+                cardPic: getCardPic(newCardValue)
+            });
         } else if (additionalDealerCardOutcome == "continue") { // if adding dealer card hasn't ended game return newCardPic
-            res.json(await getCardPic(newCardValue));
+            res.json({
+                outcome: "continue",
+                cardPic: getCardPic(newCardValue)
+            });
+        } else {
+            res.status(500).json({ error: "An error occurred while finding outcome in gameplay.js" });
         }
 
         

@@ -37,24 +37,34 @@ async function generatePlayerCard() {
     // calls api that updates database current player hand and retrieves the card pic along with it
     const response = await fetch("/api/" + username + "/playerCard");
     if (!response.ok) throw new Error("Failed to fetch player card route");
-    const outcome = await response.json();
-    if (!outcome) {
-        throw new Error("card pic json data error");
+    const data = await response.json();
+    console.log(data)
+    // Check if the response contains the required fields
+    if (!data.outcome) {
+        throw new Error("Invalid JSON data: missing outcome");
     }
-    CheckOutcome(outcome);
-    return outcome;
+    if(!data.cardPic) {
+        throw new Error("Invalid JSON data: missing cardPic")
+    }
+    CheckOutcome(data.outcome);
+    return data.cardPic;
 }
 
 async function generateDealerCard() {
     // calls api that updates database current dealer hand and retrieves the card pic along with it
     const response = await fetch("/api/" + username + "/dealerCard");
     if (!response.ok) throw new Error("Failed to fetch dealer card route");
-    const outcome = await response.json();
-    if (!outcome) {
-        throw new Error("card pic json data error");
+    const data = await response.json();
+    console.log(data)
+    // Check if the response contains the required fields
+    if (!data.outcome) {
+        throw new Error("Invalid JSON data: missing outcome");
     }
-    CheckOutcome(outcome);
-    return outcome;
+    if(!data.cardPic) {
+        throw new Error("Invalid JSON data: missing cardPic")
+    }
+    CheckOutcome(data.outcome);
+    return data.cardPic;
 }
 
 async function resetHands() {
