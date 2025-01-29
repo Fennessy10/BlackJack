@@ -133,11 +133,11 @@ body {
 
 #cheat-sheet-button {
     position: fixed; /* Position relative to the viewport */
-    top: 17%;    /* Offset from the bottom */
+    top: 14%;    /* Offset from the bottom */
     right: 11%;     /* Offset from the right */
-    width: 300px;    /* Button width */
+    width: 200px;    /* Button width */
     height: 50px;    /* Button height */
-    font-size: 1.5rem; /* Button text size */
+    font-size: 1.2rem; /* Button text size */
 }
 
 .container-md {
