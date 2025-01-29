@@ -5,6 +5,7 @@ const username = "pfen"; // Replace with a dynamic value if needed
 const youLoseElement = document.getElementById("youlose")
 const youWinElement = document.getElementById("youwin")
 const drawElement = document.getElementById("draw")
+const charlieWinElement = document.getElementById("charlieWin")
 const cheatSheetButton = document.getElementById("cheat-sheet-button");
 const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 const againButton = document.getElementById("AGAIN");
@@ -34,7 +35,7 @@ function CheckOutcome(outcome) {
         drawOccurance()
         return "draw"
     } else if (outcome == "Charlie-win") {
-        winOccurance();
+        charlieWinOccurance();
         return "Charlie-win"
     } else if (outcome == "continue") {
         return "continue"
@@ -234,6 +235,13 @@ async function winOccurance() {
 
 async function drawOccurance() {
     drawElement.style.display = "block"
+    hitButton.style.display = "none"
+    standButton.style.display = "none"
+    againButton.style.display = "block"
+}
+
+async function charlieWinOccurance() {
+    charlieWinElement.style.display = "block"
     hitButton.style.display = "none"
     standButton.style.display = "none"
     againButton.style.display = "block"

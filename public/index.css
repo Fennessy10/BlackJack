@@ -94,14 +94,20 @@ body {
 
 .outcome {
     position: fixed;
-    top: 30%; /* Adjust this value to move the "9" lower */
+    top: 28%; /* Adjust this value to move the "9" lower */
     transform: translateX(-50%); /* Adjusts for container width */
     left: 50%; /* Centers horizontally */
     font-size: 8rem;
     z-index: 10;
+    text-align: center; /* Ensures centered text */
 }
 
 .youwin {
+    color: yellowgreen;
+    display: none;
+}
+
+.charlieWin {
     color: yellowgreen;
     display: none;
 }
