@@ -13,6 +13,8 @@ const chanceOfWinning = 42; // %
 const percentNeededToBeatHouse = 50; // %
 const dealersTotalElement = document.getElementById("dealersHandTotal");
 const playersTotalElement = document.getElementById("playersHandTotal");
+const endGameMessage = "stopHandingCards"
+const continueGameMessage = "continueHandingCards"
 
 
 
@@ -24,12 +26,20 @@ function delay(ms) {
 function CheckOutcome(outcome) {
     if (outcome == "win") {
         winOccurance();
+        return "win"
     } else if (outcome == "loss") {
         lossOccurance();
+        return "loss"
     } else if (outcome == "draw") {
         drawOccurance()
+        return "draw"
     } else if (outcome == "Charlie-win") {
         winOccurance();
+        return "Charlie-win"
+    } else if (outcome == "continue") {
+        return "continue"
+    } else {
+        throw new Error("check outcome not working")
     }
 }
 
@@ -39,6 +49,7 @@ async function generatePlayerCard() {
     if (!response.ok) throw new Error("Failed to fetch player card route");
     const data = await response.json();
     console.log(data)
+
     // Check if the response contains the required fields
     if (!data.outcome) {
         throw new Error("Invalid JSON data: missing outcome");
@@ -46,8 +57,8 @@ async function generatePlayerCard() {
     if(!data.cardPic) {
         throw new Error("Invalid JSON data: missing cardPic")
     }
-    CheckOutcome(data.outcome);
-    return data.cardPic;
+
+    return data;
 }
 
 async function generateDealerCard() {
@@ -56,6 +67,7 @@ async function generateDealerCard() {
     if (!response.ok) throw new Error("Failed to fetch dealer card route");
     const data = await response.json();
     console.log(data)
+
     // Check if the response contains the required fields
     if (!data.outcome) {
         throw new Error("Invalid JSON data: missing outcome");
@@ -63,8 +75,8 @@ async function generateDealerCard() {
     if(!data.cardPic) {
         throw new Error("Invalid JSON data: missing cardPic")
     }
-    CheckOutcome(data.outcome);
-    return data.cardPic;
+    
+    return data;
 }
 
 async function resetHands() {
@@ -78,14 +90,16 @@ async function resetHands() {
 
 async function giveDealerCard() {
     try {
-        // calls api that updates database current dealer hand and retrieves the card pic along with it
-        const newCardPic = await generateDealerCard();
+        // calls api that updates database current dealer hand and retrieves the card pic and outcome
+        const data = await generateDealerCard();
+        const newCardPic = data.cardPic 
+
+        const outcome = CheckOutcome(data.outcome);
 
         // retrives newly created card data from dealer stats api
         const numberOfCardsInDealersHand = await updateDealerHand();
 
         const dealerCardElement = document.getElementById(`dealer-card-${numberOfCardsInDealersHand}-pic`);
-
 
         if (dealerCardElement) {
             dealerCardElement.src = newCardPic
@@ -93,6 +107,14 @@ async function giveDealerCard() {
         } else {
             console.error(`Element with ID card-${numberOfCardsInDealersHand}-pic not found in the DOM.`);
         }
+
+        if (outcome == "continue") { // ensure neither player nor dealer has caused an ending
+            return continueGameMessage
+        } else {
+            return endGameMessage
+        }
+
+
         
     } catch (error) {
         console.error("Error updating dealer card:", error);
@@ -101,8 +123,11 @@ async function giveDealerCard() {
 
 async function givePlayerCard() {
     try {
-        // calls api that updates database current player hand and retrieves the card pic along with it
-        const newCardPic = await generatePlayerCard();
+        // calls api that updates database current player hand and retrieves the card pic and outcome
+        const data = await generatePlayerCard();
+        const newCardPic = data.cardPic 
+
+        const outcome = CheckOutcome(data.outcome);
 
         // retrives newly created card data from player stats api
         const numberOfCardsInPlayersHand = await updatePlayerHand();
@@ -116,6 +141,13 @@ async function givePlayerCard() {
         } else {
             console.error(`Element with ID card-${numberOfCardsInPlayersHand}-pic not found in the DOM.`);
         }
+
+        if (outcome == "continue") {
+            return continueGameMessage
+        } else {
+            return endGameMessage
+        }
+
     } catch (error) {
         console.error("Error in givePlayerCard:", error);
     }
@@ -161,6 +193,16 @@ async function updateDealerHand() {
     } catch (err) {
         console.error("Error retrieving currentDealerStats:", err);
     }
+}
+
+async function getDealerHand(){
+    const response = await fetch("/api/" + username + "/currentDealerStats"); 
+    if (!response.ok) throw new Error("Failed to fetch currentDealerStats");
+    const data = await response.json();
+    if (!data || typeof data.numberOfCardsInDealersHand !== "number") {
+        throw new Error("Invalid data format for currentDealerStats");
+    }
+    return data.numberOfCardsInDealersHand
 }
 
 
@@ -267,11 +309,14 @@ standButton.addEventListener("click", async () => {
         standButton.style.display = "none"
         
 
-
-        while (dealersTotalElement.textContent < 17) {
+        while (true) { // indefinte while loop
             await delay(cardDealingDuration);
-            await giveDealerCard()
-        } 
+            if (await giveDealerCard() == endGameMessage) {
+                break;
+            }
+        }
+
+
 
 
     } catch (err) {

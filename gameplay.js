@@ -34,7 +34,7 @@ async function addLoss() {
         if (!user) {
             console.error("user not found")
         }
-        res.json({ message: "Loss updated successfully.", user });
+        console.log("loss updated successfully")
     } catch (err) {
         console.error("Error updating loss:", err);
     }
@@ -205,6 +205,7 @@ async function getNumberOfCardsInPlayersHand() {
 
 async function CheckPlayersHand() {
     playerCurrentHand = await getCurrentPlayerHand();
+    console.log("player current hand:" + playerCurrentHand)
     const numberOfCardsInPlayersHand = await getNumberOfCardsInPlayersHand();
 
     if (playerCurrentHand > 21) {
@@ -395,12 +396,12 @@ async function addValueToPlayersHand(addedValue) {
 // Helper function to get a random card for the dealer
 async function addDealerCard() {
     try {
-        incrementNumberOfDealersCards();
-        const newCardValue = createRandomCard();
+        await incrementNumberOfDealersCards();
+        const newCardValue = await createRandomCard();
         if (newCardValue == 11) {
-            incrementDealersAceCount();
+            await incrementDealersAceCount();
         }
-        addValueToDealersHand(newCardValue);
+        await addValueToDealersHand(newCardValue);
         console.log("Dealer card value generated:", newCardValue);
 
         return newCardValue
@@ -413,14 +414,12 @@ async function addDealerCard() {
 
 async function addPlayerCard() {
     try {
-        incrementNumberOfPlayersCards();
-        const newCardValue = createRandomCard();
+        await incrementNumberOfPlayersCards();
+        const newCardValue = await createRandomCard();
         if (newCardValue == 11) {
-            incrementPlayersAceCount();
+            await incrementPlayersAceCount();
         }
-        // check players hand
-        CheckPlayersHand();
-        addValueToPlayersHand(newCardValue);
+        await addValueToPlayersHand(newCardValue);
         return newCardValue
     } catch (error) {
         console.error("Error in givePlayerCard:", error);
