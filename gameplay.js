@@ -225,7 +225,7 @@ async function CheckDealersHand() {
     dealerCurrentHand = await getCurrentDealerHand();
     playerCurrentHand = await getCurrentPlayerHand();
 
-    if (dealerCurrentHand > 17) { //check 
+    if (dealerCurrentHand >= 17) { //check 
         if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
             await addLoss(); //player loses
             return "loss"
