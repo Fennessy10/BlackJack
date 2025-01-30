@@ -258,5 +258,9 @@ body {
     display: none;
 }
 
+#total-games-num {
+    color: orange;
+}
+
 
 

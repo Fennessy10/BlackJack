@@ -45,7 +45,7 @@ async function run() {
         const user = new User({ // creates the user
             user_name: "pfen",
         });
-        
+
         // Save the user to the database
 
         // console.log(user);
@@ -58,7 +58,7 @@ async function run() {
 
 
 // the api is called by the front-end, namely User.js thus this acts to serve the front-end
-app.get("/api/:username", async (req, res) => {
+app.get("/api/:username/winPercentage", async (req, res) => {
     try {
         const username = req.params.username.toLowerCase();
         const user = await User.findOne({ user_name: username }); // find the username in the database
@@ -69,6 +69,23 @@ app.get("/api/:username", async (req, res) => {
 
         const winPercentage = user.calculatedWinPercentage; // Use the virtual property
         res.json({ winPercentage });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "An error occurred" });
+    }
+});
+
+app.get("/api/:username/gamesPlayed", async (req, res) => {
+    try {
+        const username = req.params.username.toLowerCase();
+        const user = await User.findOne({ user_name: username }); // find the username in the database
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const gamesPlayed = user.numberOfGamesPlayed; // Use the virtual property
+        res.json({ gamesPlayed });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred" });

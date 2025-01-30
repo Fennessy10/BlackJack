@@ -80,6 +80,10 @@ userSchema.virtual('calculatedWinPercentage').get(function () {
     return totalGames > 0 ? (this.wins / totalGames) * 100 : 0;
 });
 
+userSchema.virtual('numberOfGamesPlayed').get(function () {
+    const totalGames = this.wins + this.losses;
+    return totalGames;
+});
 
 const User = mongoose.model('Users', userSchema)
 

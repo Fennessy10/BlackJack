@@ -14,6 +14,8 @@ const chanceOfWinning = 42; // %
 const percentNeededToBeatHouse = 50; // %
 const dealersTotalElement = document.getElementById("dealersHandTotal");
 const playersTotalElement = document.getElementById("playersHandTotal");
+const winPercentageElement = document.getElementById("win-percentage-num");
+const totalGamesElement = document.getElementById("total-games-num");
 const endGameMessage = "stopHandingCards"
 const continueGameMessage = "continueHandingCards"
 
@@ -262,6 +264,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Fetch and display win percentage
     fetchWinPercentage(username);
+    fetchTotalGames(username)
 
     // display username
     document.getElementById("username").innerText = "username: " + username;
@@ -275,7 +278,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Fetch and display win percentage
 async function fetchWinPercentage(username) {
     try {
-        const response = await fetch(`/api/${username}`);
+        const response = await fetch(`/api/${username}/winPercentage`);
         if (!response.ok) throw new Error(`Error fetching win percentage: ${response.status}`);
 
         const data = await response.json();
@@ -284,17 +287,34 @@ async function fetchWinPercentage(username) {
 
         // change win percentage colour based on its number
         if (winPercentage < chanceOfWinning) {
-            document.getElementById("win-percentage-num").style.color = "red"
+            winPercentageElement.style.color = "red"
 
         } else if (winPercentage < percentNeededToBeatHouse && winPercentage >= chanceOfWinning) {
-            document.getElementById("win-percentage-num").style.color = "orange"
+            winPercentageElement.style.color = "orange"
 
         } else {
-            document.getElementById("win-percentage-num").style.color = "lightblue"
+            winPercentageElement.style.color = "lightblue"
         }
 
         // Update the HTML with the win percentage
-        document.getElementById("win-percentage-num").innerText = winPercentage;
+        winPercentageElement.innerText = winPercentage;
+    } catch (error) {
+        console.error("Error fetching win percentage:", error);
+        document.getElementById("win-percentage").innerText = "N/A";
+    }
+}
+
+async function fetchTotalGames(username) {
+    try {
+        const response = await fetch(`/api/${username}/gamesPlayed`);
+        if (!response.ok) throw new Error(`Error fetching games played: ${response.status}`);
+
+        const data = await response.json();
+        console.log(data)
+        const gamesPlayed = data.gamesPlayed; 
+
+        // Update the HTML with the win percentage
+        totalGamesElement.innerText = gamesPlayed;
     } catch (error) {
         console.error("Error fetching win percentage:", error);
         document.getElementById("win-percentage").innerText = "N/A";
@@ -324,9 +344,6 @@ standButton.addEventListener("click", async () => {
                 break;
             }
         }
-
-
-
 
     } catch (err) {
         console.error("Error with stand button", err);
