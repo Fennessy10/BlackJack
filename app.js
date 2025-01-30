@@ -33,6 +33,18 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
+app.get("/sign-in", (req, res) => {
+    res.render("sign-in");
+})
+
+app.get("/sign-up", (req, res) => {
+    res.render("sign-up");
+})
+
+app.get("*", (req, res) => {
+    res.render("404")
+})
+
 // Start the server
 app.listen(PORT_NUMBER, () => {
     console.log(`Listening on port ${PORT_NUMBER}`);
