@@ -78,13 +78,13 @@ function getCardPic(cardNum) {
     }
 }
 
-async function resetDealersAceCount() {
+async function setDealersAceCount(newValue) {
     try {
         // const { username } = req.params;
         const username = "pfen"; // Replace with dynamic username if needed
         const user = await User.findOneAndUpdate(
             { user_name: username },
-            { dealerAceCount: 0 }, // Set currentPlayerHand to the new value
+            { dealerAceCount: newValue }, // Set currentPlayerHand to the new value
             { new: true }
         );
         if (!user) {
@@ -96,13 +96,13 @@ async function resetDealersAceCount() {
     }
 }
 
-async function resetPlayersAceCount() {
+async function setPlayersAceCount(newValue) {
     try {
         // const { username } = req.params;
         const username = "pfen"; // Replace with dynamic username if needed
         const user = await User.findOneAndUpdate(
             { user_name: username },
-            { playerAceCount: 0 }, // Set currentPlayerHand to the new value
+            { playerAceCount: newValue }, // Set currentPlayerHand to the new value
             { new: true }
         );
         if (!user) {
@@ -137,10 +137,10 @@ async function getDealersAceCount() {
 }
 
 async function adjustAcesForPlayer() {
-    const aceCount = getPlayersAceCount();
+    let aceCount = await getPlayersAceCount();
 
     // retrieve current dealerhand from db
-    const playerCurrentHand = await getCurrentPlayerHand();
+    let playerCurrentHand = await getCurrentPlayerHand();
 
     // account for aces if the hand is now above 17
     if (playerCurrentHand > 21 && aceCount > 0) {
@@ -148,16 +148,16 @@ async function adjustAcesForPlayer() {
             playerCurrentHand -= 10; // Reduce playerCurrentHand from 11 to 1
             aceCount--; 
         }
-        SetValueOfPlayersHand(playerCurrentHand);
-        resetPlayersAceCount();
+        await SetValueOfPlayersHand(playerCurrentHand);
+        await setPlayersAceCount(aceCount);
     } 
 }
 
 async function adjustAcesForDealer() {
-    const aceCount = getDealersAceCount();
+    let aceCount = await getDealersAceCount();
 
     // retrieve current dealerhand from db
-    const dealerCurrentHand = await getCurrentDealerHand();
+    let dealerCurrentHand = await getCurrentDealerHand();
 
     // account for aces if the hand is now above 17
     if (dealerCurrentHand > 21 && aceCount > 0) {
@@ -165,8 +165,8 @@ async function adjustAcesForDealer() {
             dealerCurrentHand -= 10; // Reduce dealerCurrentHand from 11 to 1
             aceCount--; 
         }
-        SetValueOfDealersHand(dealerCurrentHand);
-        resetDealersAceCount();
+        await SetValueOfDealersHand(dealerCurrentHand);
+        await setDealersAceCount(aceCount);
     } 
 }
 
