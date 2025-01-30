@@ -279,6 +279,7 @@ async function fetchWinPercentage(username) {
         if (!response.ok) throw new Error(`Error fetching win percentage: ${response.status}`);
 
         const data = await response.json();
+        console.log(data)
         const winPercentage = data.winPercentage.toFixed(2); // Format to 2 decimal places
 
         // change win percentage colour based on its number

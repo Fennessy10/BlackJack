@@ -5,7 +5,6 @@ const User = require("./models/User");
 
 async function addWin() {
     try {
-        console.log("Username in gameplay route:", req.params.username);
         // const { username } = req.params;
         username = "pfen"
         const user = await User.findOneAndUpdate(
