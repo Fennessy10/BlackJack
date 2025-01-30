@@ -18,6 +18,7 @@ const winPercentageElement = document.getElementById("win-percentage-num");
 const totalGamesElement = document.getElementById("total-games-num");
 const endGameMessage = "stopHandingCards"
 const continueGameMessage = "continueHandingCards"
+const ResetStatsButton = document.getElementById("reset-stats-btn");
 
 
 
@@ -349,6 +350,21 @@ standButton.addEventListener("click", async () => {
         console.error("Error with stand button", err);
     }
 });
+
+ResetStatsButton.addEventListener("click", async () => {
+    try {
+
+        try {
+            await fetch("/api/" + username + "/resetGamesPlayed", { method: "POST" });
+            location.reload();
+        } catch (err) {
+            console.error("Error calling resetGamesPlayed API:", err);
+        }
+
+    } catch (err) {
+        console.error("Error with Reset Stats button", err);
+    }
+})
 
 cheatSheetButton.addEventListener("click", async() => {
     try {

@@ -599,5 +599,41 @@ router.post("/resetHands", async (req, res) => {
     }
 });
 
+// Route to reset hand-related fields in the database
+router.post("/resetGamesPlayed", async (req, res) => {
+    try {
+        // const { username } = req.body; // Expecting `username` in the request body
+        username = "pfen"
+
+        // Ensure the username is provided
+        if (!username) {
+            return res.status(400).json({ error: "Username is required." });
+        }
+
+        // Find the user by username and reset the relevant fields
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            {
+                $set: {
+                    losses: 0,
+                    wins: 0,
+                },
+            },
+            { new: true } // Return the updated user
+        );
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        // Respond with the updated user data
+        res.json({ message: "stats have been reset.", user });
+    } catch (err) {
+        console.error("Error resetting stats:", err);
+        res.status(500).json({ error: "An error occurred while resetting stats." });
+    }
+});
+
 
 module.exports = { router };
