@@ -60,8 +60,8 @@ body {
     margin: 10px;
     color: lightpink;
     position: fixed;
-    transform: translateX(-50%);
-    left: 8%; /* Positions it near the left side */
+    /* transform: translateX(-50%); */
+    left: 2%; /* Positions it near the left side */
     top: 10%; /* Adjusted to provide vertical space */
 }
 
