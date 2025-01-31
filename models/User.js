@@ -8,9 +8,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         Required: true,
         Unique: true,
-        lowercase: true,
-        minlength: 3,
-        maxlength: 10
+        minlength: 3
     },
     wins: {
         type: Number,
