@@ -35,6 +35,7 @@ body {
     background-color: transparent !important; /* important overrides bootstrap's default */
     border: none !important;
     color: white !important;
+    
 }
 
 .dealersHand {
@@ -60,29 +61,34 @@ body {
     margin: 10px;
     color: lightpink;
     position: fixed;
-    /* transform: translateX(-50%); */
-    left: 2%; /* Positions it near the left side */
-    top: 10%; /* Adjusted to provide vertical space */
+    left: 2%; /* Adjusts the left position to ensure it's inside the viewport */
+    top: 10%;
+    width: 90%; /* Ensures it takes up 90% of the viewport width */
+    max-width: 400px; /* Set a max-width to prevent it from growing too large */
+    min-width: 200px; /* Set a min-width to ensure it's never too small */
+    text-align: left; /* Aligns the text to the left */
 }
+
+
+.total-games{
+    font-size: 3vw !important; 
+}
+
 
 .win-percentage {
     position: relative; /* Positioned relative to `.details` */
     margin-bottom: 20px; /* Adds spacing between win percentage and username */
-    text-align: center;
 }
 
 .win-percentage-label {
     margin: 0;
+    font-size: 2vw !important; 
 }
 
 .win-percentage-num {
     color: orangered;
-}
+    font-size: 3vw !important; 
 
-.username {
-    position: relative; /* Positioned relative to `.details` */
-    text-align: center; /* Ensures centered text */
-    margin-top: 20px; /* Adds spacing above username */
 }
 
 #player {
@@ -94,10 +100,10 @@ body {
 
 .outcome {
     position: fixed;
-    top: 28%; /* Adjust this value to move the "9" lower */
+    top: 290px; /* Adjust this value to move the "9" lower */
     transform: translateX(-50%); /* Adjusts for container width */
     left: 50%; /* Centers horizontally */
-    font-size: 8rem;
+    font-size: 5vw;
     z-index: 10;
     text-align: center; /* Ensures centered text */
 }
@@ -133,23 +139,27 @@ body {
 
 #cheat-sheet-button {
     position: fixed; /* Position relative to the viewport */
-    top: 14%;    /* Offset from the bottom */
+    top: 11%;    /* Offset from the bottom */
     right: 11%;     /* Offset from the right */
-    width: 200px;    /* Button width */
-    height: 50px;    /* Button height */
-    font-size: 1.2rem; /* Button text size */
+    width: 20vw;    /* Button width as a percentage of the viewport width */
+    height: 9vh;    /* Button height as a percentage of the viewport height */
+    font-size: 1.8vw; /* Button text size relative to viewport width */
 }
 
-.container-md {
+
+.container-player {
     position: fixed;
-    bottom: 28%;
-    left: 50%; /* Centers horizontally */
-    transform: translateX(-50%); /* Adjusts for container width */
-    display: flex; /* allows the buttons to narrow together by changing in size when close */
-    justify-content: center; /* Centers items horizontally within the container */
-    align-items: center; /* Centers items vertically within the container */
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
+    width: 80%; /* Sets the container width to 80% of the viewport width */
+    max-width: 800px; /* Optional: set a maximum container width */
 }
+
 
 .container-dealer {
     position: fixed;
@@ -167,13 +177,14 @@ body {
 .container-dealer img {
     width: 15%; /* Fix the card width */
     height: auto; /* Maintain aspect ratio */
-    
+    min-width: 65px; /* Set a minimum width so the images don't get too small */
 }
 
 
-.container-md img {
-    max-width: 10%;
+.container-player img {
+    width: 15%;
     height: auto; /* Maintains the aspect ratio */
+    min-width: 65px; /* Set a minimum width so the images don't get too small */
 }
 
 #card-1-pic {
@@ -254,20 +265,22 @@ body {
     transform: translate(-50%, -50%); /* Adjusts for container width and height */
     width: 30%;
     height: 15%;
-    font-size: 5rem;
+    font-size: 5vw;
     display: none;
 }
 
 #total-games-num {
     color: orange;
+    font-size: 3vw !important; 
+}
+
+#total-games-label {
+    font-size: 2vw !important; 
 }
 
 #reset-stats-btn{
     font-size: 1.2rem
 }
 
-#username {
-    font-size: 1.2rem
-}
 
 

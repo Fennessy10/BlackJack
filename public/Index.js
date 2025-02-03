@@ -269,9 +269,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchWinPercentage(username);
     fetchTotalGames(username)
 
-    // display username
-    document.getElementById("username").innerText = "username: " + username;
-
     // Cheat sheet Consistency on page reload
     sendCheatSettingToBrowser();
 
