@@ -1,7 +1,7 @@
 // Select the player score element and the HIT button
 const hitButton = document.getElementById("hit");
 const standButton = document.getElementById("stand");
-const username = "pfen"; // Replace with a dynamic value if needed
+const username = "1738572734870"; // Replace with a dynamic value if needed
 const youLoseElement = document.getElementById("youlose")
 const youWinElement = document.getElementById("youwin")
 const drawElement = document.getElementById("draw")

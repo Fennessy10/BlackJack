@@ -3,10 +3,8 @@ const router = express.Router(); // Use router to create modular routes
 const User = require("./models/User");
 
 
-async function addWin() {
+async function addWin(username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { wins: 1 } },
@@ -21,10 +19,8 @@ async function addWin() {
     }
 }
 
-async function addLoss() {
+async function addLoss(username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { losses: 1 } },
@@ -77,10 +73,8 @@ function getCardPic(cardNum) {
     }
 }
 
-async function setDealersAceCount(newValue) {
+async function setDealersAceCount(newValue, username) {
     try {
-        // const { username } = req.params;
-        const username = "pfen"; // Replace with dynamic username if needed
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { dealerAceCount: newValue }, // Set currentPlayerHand to the new value
@@ -95,10 +89,8 @@ async function setDealersAceCount(newValue) {
     }
 }
 
-async function setPlayersAceCount(newValue) {
+async function setPlayersAceCount(newValue, username) {
     try {
-        // const { username } = req.params;
-        const username = "pfen"; // Replace with dynamic username if needed
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { playerAceCount: newValue }, // Set currentPlayerHand to the new value
@@ -113,9 +105,7 @@ async function setPlayersAceCount(newValue) {
     }
 }
 
-async function getPlayersAceCount() {
-    // const username = req.params.username.toLowerCase(); // Get the username from the route params
-    const username = "pfen"
+async function getPlayersAceCount(username) {
 
     // Find the user in the database
     const user = await User.findOne({ user_name: username });
@@ -124,9 +114,7 @@ async function getPlayersAceCount() {
     return user.playerAceCount
 }
 
-async function getDealersAceCount() {
-    // const username = req.params.username.toLowerCase(); // Get the username from the route params
-    const username = "pfen"
+async function getDealersAceCount(username) {
 
     // Find the user in the database
     const user = await User.findOne({ user_name: username });
@@ -135,11 +123,11 @@ async function getDealersAceCount() {
     return user.dealerAceCount
 }
 
-async function adjustAcesForPlayer() {
-    let aceCount = await getPlayersAceCount();
+async function adjustAcesForPlayer(username) {
+    let aceCount = await getPlayersAceCount(username);
 
     // retrieve current dealerhand from db
-    let playerCurrentHand = await getCurrentPlayerHand();
+    let playerCurrentHand = await getCurrentPlayerHand(username);
 
     // account for aces if the hand is now above 17
     if (playerCurrentHand > 21 && aceCount > 0) {
@@ -147,16 +135,16 @@ async function adjustAcesForPlayer() {
             playerCurrentHand -= 10; // Reduce playerCurrentHand from 11 to 1
             aceCount--; 
         }
-        await SetValueOfPlayersHand(playerCurrentHand);
-        await setPlayersAceCount(aceCount);
+        await SetValueOfPlayersHand(playerCurrentHand, username);
+        await setPlayersAceCount(aceCount, username);
     } 
 }
 
-async function adjustAcesForDealer() {
-    let aceCount = await getDealersAceCount();
+async function adjustAcesForDealer(username) {
+    let aceCount = await getDealersAceCount(username);
 
     // retrieve current dealerhand from db
-    let dealerCurrentHand = await getCurrentDealerHand();
+    let dealerCurrentHand = await getCurrentDealerHand(username);
 
     // account for aces if the hand is now above 17
     if (dealerCurrentHand > 21 && aceCount > 0) {
@@ -164,14 +152,12 @@ async function adjustAcesForDealer() {
             dealerCurrentHand -= 10; // Reduce dealerCurrentHand from 11 to 1
             aceCount--; 
         }
-        await SetValueOfDealersHand(dealerCurrentHand);
-        await setDealersAceCount(aceCount);
+        await SetValueOfDealersHand(dealerCurrentHand, username);
+        await setDealersAceCount(aceCount, username);
     } 
 }
 
-async function getCurrentDealerHand(){
-    // const username = req.params.username.toLowerCase(); // Get the username from the route params
-    const username = "pfen"
+async function getCurrentDealerHand(username){
 
     // Find the user in the database
     const user = await User.findOne({ user_name: username });
@@ -180,10 +166,7 @@ async function getCurrentDealerHand(){
     return user.currentDealerHand
 }
 
-async function getCurrentPlayerHand(){
-    // const username = req.params.username.toLowerCase(); // Get the username from the route params
-    const username = "pfen"
-
+async function getCurrentPlayerHand(username){
     // Find the user in the database
     const user = await User.findOne({ user_name: username });
 
@@ -191,9 +174,7 @@ async function getCurrentPlayerHand(){
     return user.currentPlayerHand
 }
 
-async function getNumberOfCardsInPlayersHand() {
-    // const username = req.params.username.toLowerCase(); // Get the username from the route params
-    const username = "pfen"
+async function getNumberOfCardsInPlayersHand(username) {
 
     // Find the user in the database
     const user = await User.findOne({ user_name: username });
@@ -202,36 +183,36 @@ async function getNumberOfCardsInPlayersHand() {
     return user.numberOfCardsInPlayersHand
 }
 
-async function CheckPlayersHand() {
-    playerCurrentHand = await getCurrentPlayerHand();
+async function CheckPlayersHand(username) {
+    playerCurrentHand = await getCurrentPlayerHand(username);
     console.log("player current hand:" + playerCurrentHand)
-    const numberOfCardsInPlayersHand = await getNumberOfCardsInPlayersHand();
+    const numberOfCardsInPlayersHand = await getNumberOfCardsInPlayersHand(username);
 
     if (playerCurrentHand > 21) {
-        addLoss();
+        addLoss(username);
         return "loss"
     } 
 
     if (numberOfCardsInPlayersHand == 5) {
-        addWin(); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
+        addWin(username); // if after 5 hits the hand is less than 21 insta win (5-Card Charlie rule)
         return "Charlie-win"
     } 
 
     return "continue"
 }
 
-async function CheckDealersHand() {
-    dealerCurrentHand = await getCurrentDealerHand();
-    playerCurrentHand = await getCurrentPlayerHand();
+async function CheckDealersHand(username) {
+    dealerCurrentHand = await getCurrentDealerHand(username);
+    playerCurrentHand = await getCurrentPlayerHand(username);
 
     if (dealerCurrentHand >= 17) { //check 
         if (dealerCurrentHand <= 21 && dealerCurrentHand > playerCurrentHand) {
-            await addLoss(); //player loses
+            await addLoss(username); //player loses
             return "loss"
         } else if (dealerCurrentHand == playerCurrentHand) {
             return "draw"
         } else {
-            await addWin();
+            await addWin(username);
             return "win"
         }
     } else {
@@ -248,10 +229,8 @@ function createRandomCard() {
 }
 
 
-async function incrementNumberOfDealersCards() {
+async function incrementNumberOfDealersCards(username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { numberOfCardsInDealersHand: 1 } },
@@ -265,10 +244,8 @@ async function incrementNumberOfDealersCards() {
     }
 }
 
-async function incrementNumberOfPlayersCards() {
+async function incrementNumberOfPlayersCards(username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { numberOfCardsInPlayersHand: 1 } },
@@ -282,10 +259,8 @@ async function incrementNumberOfPlayersCards() {
     }
 }
 
-async function incrementDealersAceCount() {
+async function incrementDealersAceCount(username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { dealerAceCount: 1 } },
@@ -300,10 +275,8 @@ async function incrementDealersAceCount() {
     }
 }
 
-async function incrementPlayersAceCount() {
+async function incrementPlayersAceCount(username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { playerAceCount: 1 } },
@@ -318,10 +291,8 @@ async function incrementPlayersAceCount() {
     }
 }
 
-async function SetValueOfDealersHand(newValue) {
+async function SetValueOfDealersHand(newValue, username) {
     try {
-        // const { username } = req.params;
-        const username = "pfen"; // Replace with dynamic username if needed
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { currentDealerHand: newValue }, // Set currentDealerHand to the new value
@@ -337,10 +308,8 @@ async function SetValueOfDealersHand(newValue) {
     }
 }
 
-async function SetValueOfPlayersHand(newValue) {
+async function SetValueOfPlayersHand(newValue, username) {
     try {
-        // const { username } = req.params;
-        const username = "pfen"; // Replace with dynamic username if needed
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { currentPlayerHand: newValue }, // Set currentPlayerHand to the new value
@@ -356,10 +325,8 @@ async function SetValueOfPlayersHand(newValue) {
     }
 }
 
-async function addValueToDealersHand(addedValue) {
+async function addValueToDealersHand(addedValue, username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { currentDealerHand: addedValue } },
@@ -374,10 +341,8 @@ async function addValueToDealersHand(addedValue) {
     }
 }
 
-async function addValueToPlayersHand(addedValue) {
+async function addValueToPlayersHand(addedValue, username) {
     try {
-        // const { username } = req.params;
-        username = "pfen"
         const user = await User.findOneAndUpdate(
             { user_name: username },
             { $inc: { currentPlayerHand: addedValue } },
@@ -393,14 +358,14 @@ async function addValueToPlayersHand(addedValue) {
 }
 
 // Helper function to get a random card for the dealer
-async function addDealerCard() {
+async function addDealerCard(username) {
     try {
-        await incrementNumberOfDealersCards();
-        const newCardValue = await createRandomCard();
+        await incrementNumberOfDealersCards(username);
+        const newCardValue = createRandomCard();
         if (newCardValue == 11) {
-            await incrementDealersAceCount();
+            await incrementDealersAceCount(username);
         }
-        await addValueToDealersHand(newCardValue);
+        await addValueToDealersHand(newCardValue, username);
         console.log("Dealer card value generated:", newCardValue);
 
         return newCardValue
@@ -411,14 +376,14 @@ async function addDealerCard() {
 }
 
 
-async function addPlayerCard() {
+async function addPlayerCard(username) {
     try {
-        await incrementNumberOfPlayersCards();
-        const newCardValue = await createRandomCard();
+        await incrementNumberOfPlayersCards(username);
+        const newCardValue = createRandomCard();
         if (newCardValue == 11) {
-            await incrementPlayersAceCount();
+            await incrementPlayersAceCount(username);
         }
-        await addValueToPlayersHand(newCardValue);
+        await addValueToPlayersHand(newCardValue, username);
         return newCardValue
     } catch (error) {
         console.error("Error in givePlayerCard:", error);
@@ -428,9 +393,15 @@ async function addPlayerCard() {
 // Route to serve a random card for the player
 router.get("/playerCard", async (req, res) => {
     try {
-        const newCardValue = await addPlayerCard()
-        await adjustAcesForPlayer();
-        const additionalPlayerCardOutcome = await CheckPlayersHand(); // Call the function and get the value
+        const username = req.query.username; // Get from URL query
+
+        if (!username) {
+            return res.status(400).json({ error: "Username is required" });
+        }
+
+        const newCardValue = await addPlayerCard(username)
+        await adjustAcesForPlayer(username);
+        const additionalPlayerCardOutcome = await CheckPlayersHand(username); // Call the function and get the value
         console.log(additionalPlayerCardOutcome);
 
         console.log(newCardValue)
@@ -471,9 +442,15 @@ router.get("/playerCard", async (req, res) => {
 // Route to serve a random card for the dealer
 router.get("/dealerCard", async (req, res) => {
     try {
-        const newCardValue = await addDealerCard()
-        await adjustAcesForDealer();
-        const additionalDealerCardOutcome = await CheckDealersHand();
+        const username = req.query.username; // Get from URL query
+
+        if (!username) {
+            return res.status(400).json({ error: "Username is required" });
+        }
+
+        const newCardValue = await addDealerCard(username)
+        await adjustAcesForDealer(username);
+        const additionalDealerCardOutcome = await CheckDealersHand(username);
 
         
         if (additionalDealerCardOutcome == "win") {
@@ -511,8 +488,8 @@ router.get("/dealerCard", async (req, res) => {
 // Route to get current hands for a specific user
 router.get("/currentPlayerStats", async (req, res) => {
     try {
-        // const username = req.params.username.toLowerCase(); // Get the username from the route params
-        const username = "pfen"
+        const username = req.params.username.toLowerCase(); // Get the username from the URL query
+
 
         // Find the user in the database
         const user = await User.findOne({ user_name: username });
@@ -536,8 +513,7 @@ router.get("/currentPlayerStats", async (req, res) => {
 
 router.get("/currentDealerStats", async (req, res) => {
     try {
-        // const username = req.params.username.toLowerCase(); // Get the username from the route params
-        const username = "pfen"
+        const username = req.params.username.toLowerCase(); // Get the username from the URL query
 
         // Find the user in the database
         const user = await User.findOne({ user_name: username });
@@ -562,8 +538,7 @@ router.get("/currentDealerStats", async (req, res) => {
 // Route to reset hand-related fields in the database
 router.post("/resetHands", async (req, res) => {
     try {
-        // const { username } = req.body; // Expecting `username` in the request body
-        username = "pfen"
+        const username = req.params.username.toLowerCase(); // Get the username from the URL query
 
         // Ensure the username is provided
         if (!username) {
@@ -602,8 +577,7 @@ router.post("/resetHands", async (req, res) => {
 // Route to reset hand-related fields in the database
 router.post("/resetGamesPlayed", async (req, res) => {
     try {
-        // const { username } = req.body; // Expecting `username` in the request body
-        username = "pfen"
+        const username = req.params.username.toLowerCase(); // Get the username from the URL query
 
         // Ensure the username is provided
         if (!username) {
