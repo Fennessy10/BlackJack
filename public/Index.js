@@ -20,6 +20,7 @@ const endGameMessage = "stopHandingCards"
 const continueGameMessage = "continueHandingCards"
 const ResetStatsButton = document.getElementById("reset-stats-btn");
 
+console.log("Script loaded");
 
 
 // delay utility function
