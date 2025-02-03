@@ -488,7 +488,7 @@ router.get("/dealerCard", async (req, res) => {
 // Route to get current hands for a specific user
 router.get("/currentPlayerStats", async (req, res) => {
     try {
-        const username = req.params.username.toLowerCase(); // Get the username from the URL query
+        const username = req.params.username; // Get the username from the URL query
 
 
         // Find the user in the database
@@ -513,7 +513,7 @@ router.get("/currentPlayerStats", async (req, res) => {
 
 router.get("/currentDealerStats", async (req, res) => {
     try {
-        const username = req.params.username.toLowerCase(); // Get the username from the URL query
+        const username = req.params.username; // Get the username from the URL query
 
         // Find the user in the database
         const user = await User.findOne({ user_name: username });
@@ -538,7 +538,7 @@ router.get("/currentDealerStats", async (req, res) => {
 // Route to reset hand-related fields in the database
 router.post("/resetHands", async (req, res) => {
     try {
-        const username = req.params.username.toLowerCase(); // Get the username from the URL query
+        const username = req.params.username; // Get the username from the URL query
 
         // Ensure the username is provided
         if (!username) {
@@ -577,7 +577,7 @@ router.post("/resetHands", async (req, res) => {
 // Route to reset hand-related fields in the database
 router.post("/resetGamesPlayed", async (req, res) => {
     try {
-        const username = req.params.username.toLowerCase(); // Get the username from the URL query
+        const username = req.params.username; // Get the username from the URL query
 
         // Ensure the username is provided
         if (!username) {
