@@ -1,7 +1,8 @@
 // Select the player score element and the HIT button
 const hitButton = document.getElementById("hit");
 const standButton = document.getElementById("stand");
-const username = "1738572734870"; // Replace with a dynamic value if needed
+const pathname = window.location.pathname;  // Get the full path
+const username = pathname.split('/')[2];  // Replace with a dynamic value if needed
 const youLoseElement = document.getElementById("youlose")
 const youWinElement = document.getElementById("youwin")
 const drawElement = document.getElementById("draw")

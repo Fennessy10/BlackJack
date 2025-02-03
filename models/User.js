@@ -22,6 +22,12 @@ const userSchema = new mongoose.Schema({
         min: 0,
         default: 0
     },
+    draws: {
+        type: Number,
+        Required: true,
+        min: 0,
+        default: 0
+    },
     currentPlayerHand: {
         type: Number,
         min: 0,
@@ -74,12 +80,12 @@ const userSchema = new mongoose.Schema({
 
 // A virtual property does not store the win_percentage in the database but calculates it on demand
 userSchema.virtual('calculatedWinPercentage').get(function () {
-    const totalGames = this.wins + this.losses;
+    const totalGames = this.wins + this.losses + this.draws;
     return totalGames > 0 ? (this.wins / totalGames) * 100 : 0;
 });
 
 userSchema.virtual('numberOfGamesPlayed').get(function () {
-    const totalGames = this.wins + this.losses;
+    const totalGames = this.wins + this.losses + this.draws;
     return totalGames;
 });
 

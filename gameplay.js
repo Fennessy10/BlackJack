@@ -35,6 +35,22 @@ async function addLoss(username) {
     }
 }
 
+async function addDraw(username) {
+    try {
+        const user = await User.findOneAndUpdate(
+            { user_name: username },
+            { $inc: { draws: 1 } },
+            { new: true }
+        );
+        if (!user) {
+            console.error("user not found")
+        }
+        console.log("draw updated successfully")
+    } catch (err) {
+        console.error("Error updating draw:", err);
+    }
+}
+
 function getCardPic(cardNum) {
     // Generate a random suit (1 to 4)
     const suit = Math.floor(Math.random() * 4) + 1;
@@ -210,6 +226,7 @@ async function CheckDealersHand(username) {
             await addLoss(username); //player loses
             return "loss"
         } else if (dealerCurrentHand == playerCurrentHand) {
+            await addDraw(username)
             return "draw"
         } else {
             await addWin(username);
@@ -391,9 +408,9 @@ async function addPlayerCard(username) {
 }
 
 // Route to serve a random card for the player
-router.get("/playerCard", async (req, res) => {
+router.get("/:username/playerCard", async (req, res) => {
     try {
-        const username = req.query.username; // Get from URL query
+        const username = req.params.username;
 
         if (!username) {
             return res.status(400).json({ error: "Username is required" });
@@ -440,9 +457,11 @@ router.get("/playerCard", async (req, res) => {
 });
 
 // Route to serve a random card for the dealer
-router.get("/dealerCard", async (req, res) => {
+router.get("/:username/dealerCard", async (req, res) => {
     try {
-        const username = req.query.username; // Get from URL query
+        const username = req.params.username;
+
+        console.log("Received username:", username); // Log the username
 
         if (!username) {
             return res.status(400).json({ error: "Username is required" });
@@ -486,9 +505,9 @@ router.get("/dealerCard", async (req, res) => {
 
 
 // Route to get current hands for a specific user
-router.get("/currentPlayerStats", async (req, res) => {
+router.get("/:username/currentPlayerStats", async (req, res) => {
     try {
-        const username = req.params.username; // Get the username from the URL query
+        const username = req.params.username;
 
 
         // Find the user in the database
@@ -511,9 +530,9 @@ router.get("/currentPlayerStats", async (req, res) => {
     }
 });
 
-router.get("/currentDealerStats", async (req, res) => {
+router.get("/:username/currentDealerStats", async (req, res) => {
     try {
-        const username = req.params.username; // Get the username from the URL query
+        const username = req.params.username;
 
         // Find the user in the database
         const user = await User.findOne({ user_name: username });
@@ -536,7 +555,7 @@ router.get("/currentDealerStats", async (req, res) => {
 });
 
 // Route to reset hand-related fields in the database
-router.post("/resetHands", async (req, res) => {
+router.post("/:username/resetHands", async (req, res) => {
     try {
         const username = req.params.username; // Get the username from the URL query
 
@@ -575,7 +594,7 @@ router.post("/resetHands", async (req, res) => {
 });
 
 // Route to reset hand-related fields in the database
-router.post("/resetGamesPlayed", async (req, res) => {
+router.post("/:username/resetGamesPlayed", async (req, res) => {
     try {
         const username = req.params.username; // Get the username from the URL query
 

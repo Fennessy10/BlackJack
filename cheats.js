@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router(); // Use router to create modular routes
 const User = require("./models/User");
 
-router.post("/toggleCheats", async (req, res) => {
+router.post("/:username/toggleCheats", async (req, res) => {
     try {
-        // Simulate getting the username from the request
-        const username = "pfen";
+        const username = req.params.username; // Get the username from the URL query
 
         // Find the user and toggle the cheatSheetToggle value
         const user = await User.findOneAndUpdate(
@@ -28,9 +27,9 @@ router.post("/toggleCheats", async (req, res) => {
     }
 });
 
-router.get("/toggleCheats", async (req, res) => {
+router.get("/:username/toggleCheats", async (req, res) => {
     try {
-        const username = "pfen"; // Replace with dynamic username if needed (e.g., from req.params or req.query)
+        const username = req.params.username; // Get the username from the URL query
 
         // Find the user by their username
         const user = await User.findOne({ user_name: username });

@@ -136,5 +136,5 @@ app.get("/api/username", async (req, res) => {
 
 
 // Mount gameplay-related routes
-app.use("/api/:username", gameplayRoutes); // All gameplay routes now include the username
-app.use("/api/:username", cheatsRoutes); // All gameplay routes now include the username
+app.use("/api", gameplayRoutes); // All gameplay routes now include the username
+app.use("/api", cheatsRoutes); // All gameplay routes now include the username
