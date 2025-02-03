@@ -100,7 +100,7 @@ body {
 
 .outcome {
     position: fixed;
-    top: 290px; /* Adjust this value to move the "9" lower */
+    top: 30%; /* Adjust this value to move the "9" lower */
     transform: translateX(-50%); /* Adjusts for container width */
     left: 50%; /* Centers horizontally */
     font-size: 5vw;
