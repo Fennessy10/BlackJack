@@ -610,6 +610,7 @@ router.post("/:username/resetGamesPlayed", async (req, res) => {
                 $set: {
                     losses: 0,
                     wins: 0,
+                    draws: 0
                 },
             },
             { new: true } // Return the updated user
