@@ -4,6 +4,7 @@ const User = require("./models/User");
 const { router: gameplayRoutes } = require("./gameplay");
 const { router: cheatsRoutes } = require("./cheats"); // Import cheats routes
 const dotenv = require("dotenv");
+const path = require("path");
 dotenv.config();
 
 
@@ -21,7 +22,7 @@ mongoose.connect(process.env.MONGODB_CONNECT_URI)
 app.use(express.static("node_modules/bootstrap/dist/css"));
 app.use(express.static("images")); // images is now the route folder
 // Serve static files from the public folder too
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
