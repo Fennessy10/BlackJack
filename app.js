@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 
-const PORT_NUMBER = process.env.port || 8080;
+const PORT_NUMBER = process.env.PORT || 8080;
 
 // Create an Express application
 const app = express();
