@@ -3,6 +3,8 @@ const mongoose = require("mongoose"); //enable mongodb
 const User = require("./models/User");
 const { router: gameplayRoutes } = require("./gameplay");
 const { router: cheatsRoutes } = require("./cheats"); // Import cheats routes
+const dotenv = require("dotenv");
+dotenv.config();
 
 
 const PORT_NUMBER = process.env.port || 8080;
@@ -11,7 +13,7 @@ const PORT_NUMBER = process.env.port || 8080;
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect("mongodb://localhost/User")
+mongoose.connect(process.env.MONGODB_CONNECT_URI)
 .then(() => console.log("Connected to MongoDB"))
 .catch((err) => console.error("Error connecting to MongoDB:", err));
 
