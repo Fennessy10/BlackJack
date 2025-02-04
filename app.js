@@ -5,7 +5,7 @@ const { router: gameplayRoutes } = require("./gameplay");
 const { router: cheatsRoutes } = require("./cheats"); // Import cheats routes
 
 
-const PORT_NUMBER = 8080;
+const PORT_NUMBER = process.env.port || 8080;
 
 // Create an Express application
 const app = express();
