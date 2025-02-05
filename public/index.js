@@ -320,9 +320,14 @@ async function fetchTotalGames(username) {
 // Add an event listener for the HIT button
 hitButton.addEventListener("click", async () => {
     try {
+        hitButton.style.display = "none"
+        standButton.style.display = "none"
+
         // call index.js give player card function
         await givePlayerCard();
 
+        hitButton.style.display = "block"
+        standButton.style.display = "block"
     } catch (err) {
         console.error("hit button error", err);
     }

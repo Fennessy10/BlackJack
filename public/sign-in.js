@@ -6,9 +6,14 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
     const playBtn = document.getElementById("Play")
+    const loading = document.getElementById("loading")
 
     playBtn.addEventListener("click", async () => {
         console.log("Play button clicked!");
+
+        playBtn.style.display = "none";
+        loading.style.display = "block";
+        
 
         const response = await fetch("/api/username")
         if (!response.ok) throw new Error("Failed to fetch player username");
