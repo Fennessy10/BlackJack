@@ -10,7 +10,6 @@ const charlieWinElement = document.getElementById("charlieWin")
 const cheatSheetButton = document.getElementById("cheat-sheet-button");
 const cheatSheetPic = document.getElementById("cheat-sheet-pic");
 const againButton = document.getElementById("AGAIN");
-const cardDealingDuration = 800; //ms
 const chanceOfWinning = 42; // %
 const percentNeededToBeatHouse = 50; // %
 const dealersTotalElement = document.getElementById("dealersHandTotal");
@@ -23,11 +22,6 @@ const ResetStatsButton = document.getElementById("reset-stats-btn");
 
 console.log("Script loaded");
 
-
-// delay utility function
-function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function CheckOutcome(outcome) {
     if (outcome == "win") {
@@ -339,7 +333,6 @@ standButton.addEventListener("click", async () => {
         
 
         while (true) { // indefinte while loop
-            await delay(cardDealingDuration);
             if (await giveDealerCard() == endGameMessage) {
                 break;
             }
