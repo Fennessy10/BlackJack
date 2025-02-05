@@ -139,12 +139,13 @@ body {
 
 #cheat-sheet-button {
     position: fixed; /* Position relative to the viewport */
-    top: 11%;    /* Offset from the bottom */
+    top: 10%;    /* Offset from the top */
     right: 11%;     /* Offset from the right */
     width: 20vw;    /* Button width as a percentage of the viewport width */
     height: 9vh;    /* Button height as a percentage of the viewport height */
     font-size: 1.8vw; /* Button text size relative to viewport width */
     z-index: 99;
+    max-height: 60px;
 }
 
 
@@ -178,14 +179,14 @@ body {
 .container-dealer img {
     width: 15%; /* Fix the card width */
     height: auto; /* Maintain aspect ratio */
-    min-width: 65px; /* Set a minimum width so the images don't get too small */
+    min-width: 55px; /* Set a minimum width so the images don't get too small */
 }
 
 
 .container-player img {
     width: 15%;
     height: auto; /* Maintains the aspect ratio */
-    min-width: 65px; /* Set a minimum width so the images don't get too small */
+    min-width: 55px; /* Set a minimum width so the images don't get too small */
 }
 
 #card-1-pic {
