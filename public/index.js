@@ -37,8 +37,6 @@ function CheckOutcome(outcome) {
         charlieWinOccurance();
         return "Charlie-win"
     } else if (outcome == "continue") {
-        hitButton.style.display = "block"
-        standButton.style.display = "block"
         return "continue"
     } else {
         throw new Error("check outcome not working")
@@ -326,8 +324,10 @@ hitButton.addEventListener("click", async () => {
         standButton.style.display = "none"
 
         // call index.js give player card function
-        await givePlayerCard();
-
+        if (await givePlayerCard() == continueGameMessage){
+            hitButton.style.display = "block"
+            standButton.style.display = "block"
+        }
 
     } catch (err) {
         console.error("hit button error", err);
