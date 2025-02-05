@@ -144,6 +144,7 @@ body {
     width: 20vw;    /* Button width as a percentage of the viewport width */
     height: 9vh;    /* Button height as a percentage of the viewport height */
     font-size: 1.8vw; /* Button text size relative to viewport width */
+    z-index: 99;
 }
 
 
