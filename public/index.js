@@ -266,6 +266,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Cheat sheet Consistency on page reload
     sendCheatSettingToBrowser();
 
+    hitButton.style.display = "block"
+    standButton.style.display = "block"
 
 });
 
