@@ -37,6 +37,8 @@ function CheckOutcome(outcome) {
         charlieWinOccurance();
         return "Charlie-win"
     } else if (outcome == "continue") {
+        hitButton.style.display = "block"
+        standButton.style.display = "block"
         return "continue"
     } else {
         throw new Error("check outcome not working")
@@ -94,8 +96,6 @@ async function giveDealerCard() {
         const data = await generateDealerCard();
         const newCardPic = data.cardPic 
 
-        const outcome = CheckOutcome(data.outcome);
-
         // retrives newly created card data from dealer stats api
         const numberOfCardsInDealersHand = await updateDealerHand();
 
@@ -107,6 +107,8 @@ async function giveDealerCard() {
         } else {
             console.error(`Element with ID card-${numberOfCardsInDealersHand}-pic not found in the DOM.`);
         }
+
+        const outcome = CheckOutcome(data.outcome);
 
         if (outcome == "continue") { // ensure neither player nor dealer has caused an ending
             return continueGameMessage
@@ -127,8 +129,6 @@ async function givePlayerCard() {
         const data = await generatePlayerCard();
         const newCardPic = data.cardPic 
 
-        const outcome = CheckOutcome(data.outcome);
-
         // retrives newly created card data from player stats api
         const numberOfCardsInPlayersHand = await updatePlayerHand();
 
@@ -141,6 +141,8 @@ async function givePlayerCard() {
         } else {
             console.error(`Element with ID card-${numberOfCardsInPlayersHand}-pic not found in the DOM.`);
         }
+
+        const outcome = CheckOutcome(data.outcome);
 
         if (outcome == "continue") {
             return continueGameMessage
@@ -326,8 +328,7 @@ hitButton.addEventListener("click", async () => {
         // call index.js give player card function
         await givePlayerCard();
 
-        hitButton.style.display = "block"
-        standButton.style.display = "block"
+
     } catch (err) {
         console.error("hit button error", err);
     }
